@@ -16,10 +16,11 @@ It would seem more natural to do something like
 Some(&vec)
 ```
 
-but in Rust, only the right-hand side of an expression should have a `&`
+but in Rust, only the right-hand side of an expression should have an `&`
 
 ```rs
 let x = 10;
-let y = &x; // we don't write let &y`
+let y = &x; // we don't write let &y
 ```
 
+.
