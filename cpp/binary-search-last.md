@@ -3,6 +3,11 @@ It is possible to change the behaviour so that the last position is instead retu
 Use reverse iterators in conjunction with the `greater<N>` comparator to do this.
 
 ```cpp
+#include <algorithm>
+#include <cassert>
+#include <vector>
+
+auto main(void) -> int {
     /**
         what is the biggest index from [2, 6) st.
         boxes[i] <= 6
@@ -17,5 +22,6 @@ Use reverse iterators in conjunction with the `greater<N>` comparator to do this
     //                                        ^ should be this index
     auto j = std::lower_bound(boxes.rbegin(), boxes.rend() - 1 - 1, 6) - boxes.rbegin();
     assert(j == 3);
+}
 ```
 
