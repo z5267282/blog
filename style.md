@@ -15,3 +15,8 @@ All lines should have a forced newline at their end so
 
 .
 
+# Compilation
+
+Examples should be self contained.  
+It should be possible to copy and paste the example and immediately compile.  
+
