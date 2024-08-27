@@ -5,6 +5,7 @@ Use reverse iterators in conjunction with the `greater<N>` comparator to do this
 ```cpp
 #include <algorithm>
 #include <cassert>
+#include <utility>
 #include <vector>
 
 auto main(void) -> int {
@@ -20,7 +21,7 @@ auto main(void) -> int {
     //                            18, 14, 10, 5 , 3 , 1
     //                            0   1   2   3   4   5
     //                                        ^ should be this index
-    auto j = std::lower_bound(boxes.rbegin(), boxes.rend() - 1 - 1, 6) - boxes.rbegin();
+    auto j = std::lower_bound(boxes.rbegin(), boxes.rend() - 1 - 1, 6, std::greater<int>()) - boxes.rbegin();
     assert(j == 3);
 }
 ```

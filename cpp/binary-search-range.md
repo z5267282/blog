@@ -1,0 +1,20 @@
+The end iterator range is not inclusive for `upper_bound` and `lower_bound`.  
+
+```cpp
+#include <algorithm>
+#include <cassert>
+#include <vector>
+
+/**
+    here 30 > 25
+    but the iterator range is end-exclusive so the 30 is not included in the range
+*/
+auto main(void) -> int {
+    auto nums = std::vector<int>{10, 20, 30};
+    //                           ^       ^
+    //                           b       e - 1
+    auto idx = std::upper_bound(nums.begin(), nums.end() - 1, 25);
+    assert(idx == nums.end() - 1);
+}
+```
+
