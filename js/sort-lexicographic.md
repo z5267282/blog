@@ -9,5 +9,12 @@ assert(x[2] === 2);
 assert(x[3] === 20);
 ```
 
+. A sorting function must be provided
+
+```js
+const x = [1, 2, 10, 20];
+x.sort((a, b) => a - b);
+```
+
 .
 
