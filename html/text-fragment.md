@@ -1,6 +1,7 @@
 # Overview
 
-Text fragments offer a way to direct to a specific spot in an HTML file.
+Text fragments offer a way to direct to a specific spot in an HTML file.  
+The documentation from MDM is [here](https://developer.mozilla.org/en-US/docs/Web/URI/Fragment/Text_fragments#browser_compatibility).  
 Anchor `<a>` tags in their `href` can redirect to an element's id using a hash like so:
 
 ```html
