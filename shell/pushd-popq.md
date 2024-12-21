@@ -15,4 +15,6 @@ $ popd
 # now in b
 a
 ```
+.  
+[guide](https://www.youtube.com/watch?v=AVXYq8aL47Q&t=217)
 
