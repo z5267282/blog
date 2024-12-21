@@ -61,5 +61,19 @@ Run these via `tmux` then provide the argument.
 | ----------------------- | ---------------------------------------------------------------------- |
 | `attach -t[n]`          | go back into a previous session replacing `[n]` with the index or name |
 | `rename-session [name]` | rename the session to `[name]`                                         |
+| `ls`                    | see all running sessions                                               |
 
 Running `tmux` will start tmux with a new session.
+[ TODO ] how to run previosu one?
+
+# Configuration
+
+The configuration file is stored in `~/.tmux.conf`.  
+When it is changed, `tmux` will automatically update in response.  
+However, if there are any running sessions, they must all be [exited first](https://unix.stackexchange.com/questions/66606/tmux-not-sourcing-my-tmux-conf#answer-66607).
+
+# YouTube Guides
+
+| Title                                                                              |
+| ---------------------------------------------------------------------------------- |
+| [Inside my iPad Pro SSH Setup - TMUX](https://www.youtube.com/watch?v=B-1wGwvUwm8) |
