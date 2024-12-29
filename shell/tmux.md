@@ -64,7 +64,6 @@ Run these via `tmux` then provide the argument.
 | `ls`                    | see all running sessions                                               |
 
 Running `tmux` will start tmux with a new session.
-[ TODO ] how to run previosu one?
 
 # Configuration
 
