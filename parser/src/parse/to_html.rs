@@ -31,14 +31,19 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
                     }
                 }
                 // Paragraph
+                // todo!();
                 // Code
                 if line.starts_with("```") {
                     mode = CurrentElementType::Code(get_code_language(line), Vec::new());
-                } else if line.starts_with('-') {
+                }
+                // Unordered List
+                else if line.starts_with('-') {
                     if let Some((_, rhs)) = line.split_once('-') {
                         mode = CurrentElementType::List(false, vec![rhs.to_string()]);
                     }
-                } else if line.starts_with(|c| c >= '0' && c <= '9') {
+                }
+                // Ordered List
+                else if line.starts_with(|c| c >= '0' && c <= '9') {
                     // there should be a 1. 2. (i.e. '.' to end the number)
                     match line.split_once('.') {
                         None => return Err(number),
@@ -48,7 +53,6 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
                         }
                     }
                 }
-                // List
             }
         }
     }
