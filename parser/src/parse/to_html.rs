@@ -20,7 +20,8 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
                     mode = CurrentElementType::Code(language, code);
                 }
             }
-            CurrentElementType::List(number, items) => todo!(),
+            // this needs to be abstracted - we call the same logic again essentially
+            CurrentElementType::List(ordered, items) => todo!(),
             CurrentElementType::NotSet => {
                 // Header
                 if line.starts_with('#') {
@@ -33,6 +34,19 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
                 // Code
                 if line.starts_with("```") {
                     mode = CurrentElementType::Code(get_code_language(line), Vec::new());
+                } else if line.starts_with('-') {
+                    if let Some((_, rhs)) = line.split_once('-') {
+                        mode = CurrentElementType::List(false, vec![rhs.to_string()]);
+                    }
+                } else if line.starts_with(|c| c >= '0' && c <= '9') {
+                    // there should be a 1. 2. (i.e. '.' to end the number)
+                    match line.split_once('.') {
+                        None => return Err(number),
+                        Some((_, rhs)) => {
+                            mode =
+                                CurrentElementType::List(true, vec![rhs.trim_start().to_string()])
+                        }
+                    }
                 }
                 // List
             }
@@ -92,17 +106,19 @@ pub fn get_code_language(line: &String) -> String {
 }
 
 enum CurrentElementType {
+    // text contents
     Paragraph(Vec<String>),
-    // language
+    // language, code contents
     Code(String, Vec<String>),
-    // current index if ordered
-    List(Option<usize>, Vec<String>),
+    // ordered, list contents
+    List(bool, Vec<String>),
     NotSet,
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::parse::{html_element::HTMLElement, to_html::parse_markdown};
+    use crate::parse::html_element::HTMLElement;
+    use crate::parse::to_html::parse_markdown;
 
     #[test]
     fn test_code() {
