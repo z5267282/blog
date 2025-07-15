@@ -32,10 +32,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
                 // Paragraph
                 // Code
                 if line.starts_with("```") {
-                    match get_code_language(line) {
-                        Some(lang) => mode = CurrentElementType::Code(lang, Vec::new()),
-                        None => return Err(number),
-                    }
+                    mode = CurrentElementType::Code(get_code_language(line), Vec::new());
                 }
                 // List
             }
@@ -88,14 +85,10 @@ pub fn parse_header(line: &String) -> Option<HTMLElement> {
 /// # use parser::parse::html_element::HTMLElement;
 /// # use parser::parse::to_html::get_code_language;
 ///
-/// assert_eq!(get_code_language(&String::from("``` cpp")), Some(String::from("cpp")));
+/// assert_eq!(get_code_language(&String::from("```cpp")), "cpp".to_string());
 /// ```
-/// TODO: wrong: its the fourth char in the string
-pub fn get_code_language(line: &String) -> Option<String> {
-    match line.split_once(' ') {
-        None => None,
-        Some((_, lang)) => Some(String::from(lang.trim())),
-    }
+pub fn get_code_language(line: &String) -> String {
+    line.chars().skip(3).collect::<String>()
 }
 
 enum CurrentElementType {
@@ -127,11 +120,12 @@ mod tests {
                     Some(element) => match element {
                         HTMLElement::Code(lang, code_lines) => {
                             assert!(lang == "py");
-                            let exp = vec!["print('hello mate')", "print('cya')", "```"]
-                                .iter()
-                                .map(|s| s.to_string())
-                                .collect();
-                            assert!(lines == exp);
+                            let exp: Vec<String> =
+                                vec!["print('hello mate')", "print('cya')", "```"]
+                                    .iter()
+                                    .map(|s| s.to_string())
+                                    .collect();
+                            assert!(code_lines == &exp);
                         }
                         _ => assert!(false),
                     },
