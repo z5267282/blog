@@ -10,10 +10,17 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
     let mut mode = CurrentElementType::NotSet;
     for (number, line) in text.iter().enumerate() {
         match mode {
-            CurrentElementType::Paragraph => todo!(),
-            // TODO: MUST CHECK IF WE ARE AT THE END OF THE CODE BLOCK
-            CurrentElementType::Code(language) => todo!(),
-            CurrentElementType::List(number) => todo!(),
+            CurrentElementType::Paragraph(lines) => todo!(),
+            CurrentElementType::Code(language, mut code) => {
+                if line.starts_with("```") {
+                    answer.push(HTMLElement::Code(language, code));
+                    mode = CurrentElementType::NotSet;
+                } else {
+                    code.push(line.to_string());
+                    mode = CurrentElementType::Code(language, code);
+                }
+            }
+            CurrentElementType::List(number, items) => todo!(),
             CurrentElementType::NotSet => {
                 // Header
                 if line.starts_with('#') {
@@ -26,7 +33,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
                 // Code
                 if line.starts_with("```") {
                     match get_code_language(line) {
-                        Some(lang) => mode = CurrentElementType::Code(lang),
+                        Some(lang) => mode = CurrentElementType::Code(lang, Vec::new()),
                         None => return Err(number),
                     }
                 }
@@ -91,10 +98,10 @@ pub fn get_code_language(line: &String) -> Option<String> {
 }
 
 enum CurrentElementType {
-    Paragraph,
+    Paragraph(Vec<String>),
     // language
-    Code(String),
+    Code(String, Vec<String>),
     // current index if ordered
-    List(Option<usize>),
+    List(Option<usize>, Vec<String>),
     NotSet,
 }
