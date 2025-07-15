@@ -90,6 +90,7 @@ pub fn parse_header(line: &String) -> Option<HTMLElement> {
 ///
 /// assert_eq!(get_code_language(&String::from("``` cpp")), Some(String::from("cpp")));
 /// ```
+/// TODO: wrong: its the fourth char in the string
 pub fn get_code_language(line: &String) -> Option<String> {
     match line.split_once(' ') {
         None => None,
@@ -104,4 +105,38 @@ enum CurrentElementType {
     // current index if ordered
     List(Option<usize>, Vec<String>),
     NotSet,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::parse::{html_element::HTMLElement, to_html::parse_markdown};
+
+    #[test]
+    fn test_code() {
+        let code: Vec<String> = vec!["```py", "print('hello mate')", "print('cya')", "```"]
+            .iter()
+            .map(|s| s.to_string())
+            .collect();
+        let result = parse_markdown(&code);
+        match result {
+            Err(_) => assert!(false),
+            Ok(elements) => {
+                assert!(elements.len() == 1);
+                match elements.first() {
+                    None => assert!(false),
+                    Some(element) => match element {
+                        HTMLElement::Code(lang, code_lines) => {
+                            assert!(lang == "py");
+                            let exp = vec!["print('hello mate')", "print('cya')", "```"]
+                                .iter()
+                                .map(|s| s.to_string())
+                                .collect();
+                            assert!(lines == exp);
+                        }
+                        _ => assert!(false),
+                    },
+                }
+            }
+        }
+    }
 }
