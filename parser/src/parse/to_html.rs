@@ -10,6 +10,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
     let mut mode = CurrentElementType::NotSet;
     for (number, line) in text.iter().enumerate() {
         match mode {
+            // how do you know you're at the end of a paragraph?
             CurrentElementType::Paragraph(lines) => todo!(),
             CurrentElementType::Code(language, mut code) => {
                 if line.starts_with("```") {
@@ -30,10 +31,9 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
                         None => return Err(number),
                     }
                 }
-                // Paragraph
                 // todo!();
                 // Code
-                if line.starts_with("```") {
+                else if line.starts_with("```") {
                     mode = CurrentElementType::Code(get_code_language(line), Vec::new());
                 }
                 // Unordered List
@@ -52,6 +52,10 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
                                 CurrentElementType::List(true, vec![rhs.trim_start().to_string()])
                         }
                     }
+                }
+                // Paragraph
+                else {
+                    mode = CurrentElementType::Paragraph(vec![line.to_string()]);
                 }
             }
         }
