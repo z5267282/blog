@@ -11,6 +11,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
     for (number, line) in text.iter().enumerate() {
         match mode {
             CurrentElementType::Paragraph => todo!(),
+            // TODO: MUST CHECK IF WE ARE AT THE END OF THE CODE BLOCK
             CurrentElementType::Code(language) => todo!(),
             CurrentElementType::List(number) => todo!(),
             CurrentElementType::NotSet => {
