@@ -120,11 +120,10 @@ mod tests {
                     Some(element) => match element {
                         HTMLElement::Code(lang, code_lines) => {
                             assert!(lang == "py");
-                            let exp: Vec<String> =
-                                vec!["print('hello mate')", "print('cya')", "```"]
-                                    .iter()
-                                    .map(|s| s.to_string())
-                                    .collect();
+                            let exp: Vec<String> = vec!["print('hello mate')", "print('cya')"]
+                                .iter()
+                                .map(|s| s.to_string())
+                                .collect();
                             assert!(code_lines == &exp);
                         }
                         _ => assert!(false),
