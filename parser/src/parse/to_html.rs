@@ -4,18 +4,36 @@ use crate::parse::html_element::HTMLElement;
 // 1. '-' -> spaces
 // 2. capitalised off spaces
 
-pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
-    let answer: Vec<HTMLElement> = Vec::new();
-    for line in text {
-        // Header
-        if line.starts_with('#') {
-            todo!();
+// line number, items
+pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
+    let mut answer: Vec<HTMLElement> = Vec::new();
+    let mut mode = CurrentElementType::NotSet;
+    for (number, line) in text.iter().enumerate() {
+        match mode {
+            CurrentElementType::Paragraph => todo!(),
+            CurrentElementType::Code(language) => todo!(),
+            CurrentElementType::List(number) => todo!(),
+            CurrentElementType::NotSet => {
+                // Header
+                if line.starts_with('#') {
+                    match parse_header(line) {
+                        Some(header) => answer.push(header),
+                        None => return Err(number),
+                    }
+                }
+                // Paragraph
+                // Code
+                if line.starts_with("```") {
+                    match get_code_language(line) {
+                        Some(lang) => mode = CurrentElementType::Code(lang),
+                        None => return Err(number),
+                    }
+                }
+                // List
+            }
         }
-        // Paragraph
-        // Code
-        // List
     }
-    answer
+    Ok(answer)
 }
 
 /// ```
@@ -56,4 +74,26 @@ pub fn parse_header(line: &String) -> Option<HTMLElement> {
             line.chars().skip(idx).collect::<String>(),
         )),
     }
+}
+
+/// ```
+/// # use parser::parse::html_element::HTMLElement;
+/// # use parser::parse::to_html::get_code_language;
+///
+/// assert_eq!(get_code_language(&String::from("``` cpp")), Some(String::from("cpp")));
+/// ```
+pub fn get_code_language(line: &String) -> Option<String> {
+    match line.split_once(' ') {
+        None => None,
+        Some((_, lang)) => Some(String::from(lang.trim())),
+    }
+}
+
+enum CurrentElementType {
+    Paragraph,
+    // language
+    Code(String),
+    // current index if ordered
+    List(Option<usize>),
+    NotSet,
 }
