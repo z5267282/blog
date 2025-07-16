@@ -30,10 +30,11 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
                 HTMLElement::Code(lang, mut code) => {
                     // end of code block
                     if is_code(line) {
-                        answer.push(HTMLElement::Code(lang, code));
+                        answer.push(HTMLElement::Code(lang.to_string(), code));
                         element = None;
                     } else {
                         code.push(line.to_string());
+                        element = Some(HTMLElement::Code(lang.to_string(), code));
                     }
                 }
                 HTMLElement::OrderedList(mut list) => match parse_ordered_list(line) {
@@ -41,25 +42,33 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
                         answer.push(HTMLElement::OrderedList(list));
                         element = None;
                     }
-                    Some(line) => list.push(line.to_string()),
+                    Some(line) => {
+                        list.push(line.to_string());
+                        element = Some(HTMLElement::OrderedList(list));
+                    }
                 },
                 HTMLElement::UnorderedList(mut list) => match parse_unordered_list(line) {
                     None => {
                         answer.push(HTMLElement::UnorderedList(list));
                         element = None;
                     }
-                    Some(line) => list.push(line.to_string()),
+                    Some(line) => {
+                        list.push(line.to_string());
+                        element = Some(HTMLElement::UnorderedList(list));
+                    }
                 },
                 HTMLElement::Paragraph(mut content) => match parse_fresh(line) {
-                    // TODO: this is wrong
-                    None => content.push(line),
+                    None => return Err(number),
                     Some(html) => match html {
-                        HTMLElement::Header(level, contents) => {
-                            answer.push(HTMLElement::Header(level, contents))
+                        // this will just wrap the current line in a Paragraph
+                        HTMLElement::Paragraph(_) => {
+                            content.push(line.to_string());
+                            element = Some(HTMLElement::Paragraph(content));
                         }
                         _ => element = Some(html),
-                    }
-                }
+                    },
+                },
+            },
         }
     }
     Ok(answer)
@@ -131,6 +140,7 @@ pub fn parse_ordered_list(line: &String) -> Option<String> {
 }
 
 /// Try to parse the current line fresh as if there was no previous element.
+/// Return None if there was a language feature, but it couldn't be properly parsed
 fn parse_fresh(line: &String) -> Option<HTMLElement> {
     if is_header(line) {
         parse_header(line)
