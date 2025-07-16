@@ -51,6 +51,28 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                     region = Region::Paragraph(vec![line.to_string()])
                 }
             }
+            Region::Code(lang, mut lines) => {
+                if line.starts_with("```") {
+                    elements.push(HTMLElement::Code(lang, lines));
+                    region = Region::NotSet;
+                } else {
+                    lines.push(line.to_string());
+                    region = Region::Code(lang, lines);
+                }
+            }
+            // Region::OrderedList(mut list) => {
+            //     if line.starts_with(char::is_numeric) {
+            //         match line.split_once('.') {
+            //             // list item
+            //             Some((_, rhs)) => {
+            //                 list.push(rhs.trim_start().to_string());
+            //                 region = Region::OrderedList(list);
+            //             }
+            //             // end of list
+            //             None => region = Region::NotSet,
+            //         }
+            //     }
+            // }
             _ => todo!("other code elements"),
         }
     }
