@@ -1,10 +1,23 @@
 pub enum HTMLElement {
-    // level, text
     Header(usize, String),
-    // prose
-    Paragraph(Vec<String>),
-    // language, lines
     Code(String, Vec<String>),
-    // ordered, items
-    List(bool, Vec<String>),
+    OrderedList(Vec<String>),
+    UnorderedList(Vec<String>),
+    Paragraph(Vec<String>),
+}
+
+pub fn is_header(line: &String) -> bool {
+    line.starts_with('#')
+}
+
+pub fn is_code(line: &String) -> bool {
+    line.starts_with("```")
+}
+
+pub fn is_unordered_list(line: &String) -> bool {
+    line.starts_with("- ")
+}
+
+pub fn is_ordered_list(line: &String) -> bool {
+    line.starts_with(|c| c >= '0' && c <= '9')
 }

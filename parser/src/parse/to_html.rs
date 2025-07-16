@@ -1,4 +1,6 @@
-use crate::parse::html_element::HTMLElement;
+use crate::parse::html_element::{
+    is_code, is_header, is_ordered_list, is_unordered_list, HTMLElement,
+};
 
 // the title will be the name of the file
 // 1. '-' -> spaces
@@ -7,57 +9,57 @@ use crate::parse::html_element::HTMLElement;
 // line number, items
 pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
     let mut answer: Vec<HTMLElement> = Vec::new();
-    let mut mode = CurrentElementType::NotSet;
+    let mut element: Option<HTMLElement> = None;
     for (number, line) in text.iter().enumerate() {
-        match mode {
-            // how do you know you're at the end of a paragraph?
-            CurrentElementType::Paragraph(lines) => todo!(),
-            CurrentElementType::Code(language, mut code) => {
-                if line.starts_with("```") {
-                    answer.push(HTMLElement::Code(language, code));
-                    mode = CurrentElementType::NotSet;
-                } else {
-                    code.push(line.to_string());
-                    mode = CurrentElementType::Code(language, code);
+        match element {
+            // not parsing anything
+            None => match parse_fresh(line) {
+                None => return Err(number),
+                Some(html) => match html {
+                    HTMLElement::Header(level, contents) => {
+                        answer.push(HTMLElement::Header(level, contents))
+                    }
+                    _ => element = Some(html),
+                },
+            },
+            // we are in the middle of parsing something
+            Some(curr) => match curr {
+                HTMLElement::Header(..) => {
+                    // we already parse headers when we hit them
                 }
-            }
-            // this needs to be abstracted - we call the same logic again essentially
-            CurrentElementType::List(ordered, items) => todo!(),
-            CurrentElementType::NotSet => {
-                // Header
-                if line.starts_with('#') {
-                    match parse_header(line) {
-                        Some(header) => answer.push(header),
-                        None => return Err(number),
+                HTMLElement::Code(lang, mut code) => {
+                    // end of code block
+                    if is_code(line) {
+                        answer.push(HTMLElement::Code(lang, code));
+                        element = None;
+                    } else {
+                        code.push(line.to_string());
                     }
                 }
-                // todo!();
-                // Code
-                else if line.starts_with("```") {
-                    mode = CurrentElementType::Code(get_code_language(line), Vec::new());
-                }
-                // Unordered List
-                else if line.starts_with('-') {
-                    if let Some((_, rhs)) = line.split_once('-') {
-                        mode = CurrentElementType::List(false, vec![rhs.to_string()]);
+                HTMLElement::OrderedList(mut list) => match parse_ordered_list(line) {
+                    None => {
+                        answer.push(HTMLElement::OrderedList(list));
+                        element = None;
                     }
-                }
-                // Ordered List
-                else if line.starts_with(|c| c >= '0' && c <= '9') {
-                    // there should be a 1. 2. (i.e. '.' to end the number)
-                    match line.split_once('.') {
-                        None => return Err(number),
-                        Some((_, rhs)) => {
-                            mode =
-                                CurrentElementType::List(true, vec![rhs.trim_start().to_string()])
+                    Some(line) => list.push(line.to_string()),
+                },
+                HTMLElement::UnorderedList(mut list) => match parse_unordered_list(line) {
+                    None => {
+                        answer.push(HTMLElement::UnorderedList(list));
+                        element = None;
+                    }
+                    Some(line) => list.push(line.to_string()),
+                },
+                HTMLElement::Paragraph(mut content) => match parse_fresh(line) {
+                    // TODO: this is wrong
+                    None => content.push(line),
+                    Some(html) => match html {
+                        HTMLElement::Header(level, contents) => {
+                            answer.push(HTMLElement::Header(level, contents))
                         }
+                        _ => element = Some(html),
                     }
                 }
-                // Paragraph
-                else {
-                    mode = CurrentElementType::Paragraph(vec![line.to_string()]);
-                }
-            }
         }
     }
     Ok(answer)
@@ -113,14 +115,40 @@ pub fn get_code_language(line: &String) -> String {
     line.chars().skip(3).collect::<String>()
 }
 
-enum CurrentElementType {
-    // text contents
-    Paragraph(Vec<String>),
-    // language, code contents
-    Code(String, Vec<String>),
-    // ordered, list contents
-    List(bool, Vec<String>),
-    NotSet,
+pub fn parse_unordered_list(line: &String) -> Option<String> {
+    match line.split_once("- ") {
+        None => None,
+        Some((_, rhs)) => Some(rhs.to_string()),
+    }
+}
+
+pub fn parse_ordered_list(line: &String) -> Option<String> {
+    // there should be a 1. 2. (i.e. '.' to end the number)
+    match line.split_once('.') {
+        None => None,
+        Some((_, rhs)) => Some(rhs.to_string()),
+    }
+}
+
+/// Try to parse the current line fresh as if there was no previous element.
+fn parse_fresh(line: &String) -> Option<HTMLElement> {
+    if is_header(line) {
+        parse_header(line)
+    } else if is_code(line) {
+        Some(HTMLElement::Code(get_code_language(line), Vec::new()))
+    } else if is_unordered_list(line) {
+        match parse_unordered_list(line) {
+            None => None,
+            Some(unordered_item) => Some(HTMLElement::UnorderedList(vec![unordered_item])),
+        }
+    } else if is_ordered_list(line) {
+        match parse_ordered_list(line) {
+            None => None,
+            Some(ordered_item) => Some(HTMLElement::UnorderedList(vec![ordered_item])),
+        }
+    } else {
+        Some(HTMLElement::Paragraph(vec![line.to_string()]))
+    }
 }
 
 #[cfg(test)]
