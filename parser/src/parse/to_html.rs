@@ -1,127 +1,47 @@
-use crate::parse::html_element::{
-    is_code, is_header, is_ordered_list, is_unordered_list, HTMLElement,
-};
+use crate::parse::html_element::HTMLElement;
+
+enum Region {
+    NotSet,
+    Code(String, Vec<String>),
+    OrderedList(Vec<String>),
+    UnorderedList(Vec<String>),
+    Paragraph(Vec<String>),
+}
+
+pub type Error = (usize, String);
 
 // the title will be the name of the file
 // 1. '-' -> spaces
 // 2. capitalised off spaces
 
-// line number, items
-pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, usize> {
-    let mut answer: Vec<HTMLElement> = Vec::new();
-    let mut element: Option<HTMLElement> = None;
-    for (number, line) in text.iter().enumerate() {
-        match element {
-            // not parsing anything
-            None => match parse_fresh(line) {
-                None => return Err(number),
-                Some(html) => match html {
-                    HTMLElement::Header(level, contents) => {
-                        answer.push(HTMLElement::Header(level, contents))
-                    }
-                    _ => element = Some(html),
-                },
-            },
-            // we are in the middle of parsing something
-            Some(curr) => match curr {
-                HTMLElement::Header(..) => {
-                    // we already parse headers when we hit them
+/// Return an error with the line number and a diagnostic message if one occurred
+pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, Error> {
+    let mut region = Region::NotSet;
+    let mut elements: Vec<HTMLElement> = Vec::new();
+
+    for line in text {
+        match region {
+            Region::NotSet => {
+                // header
+                if line.starts_with('#') {
+                    let content = line.trim_start_matches('#').trim_start().to_string();
+                    let level = line.find(|c| c != '#').unwrap_or(0);
+                    elements.push(HTMLElement::Header(level, content));
                 }
-                HTMLElement::Code(lang, mut code) => {
-                    // end of code block
-                    if is_code(line) {
-                        answer.push(HTMLElement::Code(lang.to_string(), code));
-                        element = None;
-                    } else {
-                        code.push(line.to_string());
-                        element = Some(HTMLElement::Code(lang.to_string(), code));
-                    }
+                // code
+                if line.starts_with("```") {
+                    let lang = line.trim_start_matches("```").trim().to_string();
+                    region = Region::Code(lang, Vec::new());
                 }
-                HTMLElement::OrderedList(mut list) => match parse_ordered_list(line) {
-                    None => {
-                        answer.push(HTMLElement::OrderedList(list));
-                        element = None;
-                    }
-                    Some(line) => {
-                        list.push(line.to_string());
-                        element = Some(HTMLElement::OrderedList(list));
-                    }
-                },
-                HTMLElement::UnorderedList(mut list) => match parse_unordered_list(line) {
-                    None => {
-                        answer.push(HTMLElement::UnorderedList(list));
-                        element = None;
-                    }
-                    Some(line) => {
-                        list.push(line.to_string());
-                        element = Some(HTMLElement::UnorderedList(list));
-                    }
-                },
-                HTMLElement::Paragraph(mut content) => match parse_fresh(line) {
-                    None => return Err(number),
-                    Some(html) => match html {
-                        // this will just wrap the current line in a Paragraph
-                        HTMLElement::Paragraph(_) => {
-                            content.push(line.to_string());
-                            element = Some(HTMLElement::Paragraph(content));
-                        }
-                        _ => element = Some(html),
-                    },
-                },
-            },
+                // ordered list
+                if line.starts_with(char::is_numeric) {}
+            }
+            _ => todo!("other code elements"),
         }
     }
-    Ok(answer)
-}
 
-/// ```
-/// # use parser::parse::html_element::HTMLElement;
-/// # use parser::parse::to_html::parse_header;
-/// match parse_header(&String::from("## Rough Shell Translation")) {
-///     None => assert!(false),
-///     Some(html) => {
-///         match html {
-///             HTMLElement::Header(level, message) => assert!(level == 2 && message == String::from("Rough Shell Translation")),
-///             _ => assert!(false)
-///         }
-///     }
-/// }
-/// ```
-pub fn parse_header(line: &String) -> Option<HTMLElement> {
-    let mut level = 0 as usize;
-    let mut parsing_hash = true;
-    let mut start: Option<usize> = None;
-    for (idx, char) in line.chars().enumerate() {
-        if parsing_hash {
-            if char == '#' {
-                level += 1;
-            } else {
-                parsing_hash = false;
-            }
-        } else {
-            if char != ' ' {
-                start = Some(idx);
-                break;
-            }
-        }
-    }
-    match start {
-        None => None,
-        Some(idx) => Some(HTMLElement::Header(
-            level,
-            line.chars().skip(idx).collect::<String>(),
-        )),
-    }
-}
-
-/// ```
-/// # use parser::parse::html_element::HTMLElement;
-/// # use parser::parse::to_html::get_code_language;
-///
-/// assert_eq!(get_code_language(&String::from("```cpp")), "cpp".to_string());
-/// ```
-pub fn get_code_language(line: &String) -> String {
-    line.chars().skip(3).collect::<String>()
+    todo!("handle last element");
+    Ok(elements)
 }
 
 pub fn parse_unordered_list(line: &String) -> Option<String> {
@@ -136,28 +56,6 @@ pub fn parse_ordered_list(line: &String) -> Option<String> {
     match line.split_once('.') {
         None => None,
         Some((_, rhs)) => Some(rhs.to_string()),
-    }
-}
-
-/// Try to parse the current line fresh as if there was no previous element.
-/// Return None if there was a language feature, but it couldn't be properly parsed
-fn parse_fresh(line: &String) -> Option<HTMLElement> {
-    if is_header(line) {
-        parse_header(line)
-    } else if is_code(line) {
-        Some(HTMLElement::Code(get_code_language(line), Vec::new()))
-    } else if is_unordered_list(line) {
-        match parse_unordered_list(line) {
-            None => None,
-            Some(unordered_item) => Some(HTMLElement::UnorderedList(vec![unordered_item])),
-        }
-    } else if is_ordered_list(line) {
-        match parse_ordered_list(line) {
-            None => None,
-            Some(ordered_item) => Some(HTMLElement::UnorderedList(vec![ordered_item])),
-        }
-    } else {
-        Some(HTMLElement::Paragraph(vec![line.to_string()]))
     }
 }
 
