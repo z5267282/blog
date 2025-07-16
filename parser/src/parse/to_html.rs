@@ -29,12 +29,29 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, Error> {
                     elements.push(HTMLElement::Header(level, content));
                 }
                 // code
-                if line.starts_with("```") {
+                else if line.starts_with("```") {
                     let lang = line.trim_start_matches("```").trim().to_string();
                     region = Region::Code(lang, Vec::new());
                 }
                 // ordered list
-                if line.starts_with(char::is_numeric) {}
+                else if line.starts_with(char::is_numeric) {
+                    match line.split_once('.') {
+                        // list item
+                        Some((_, rhs)) => {
+                            region = Region::OrderedList(vec![rhs.trim_start().to_string()])
+                        }
+                        // normal text
+                        None => region = Region::Paragraph(vec![line.to_string()]),
+                    }
+                }
+                // unordered list
+                else if line.starts_with("- ") {
+                    region = Region::UnorderedList(vec![line.trim_start_matches("- ").to_string()]);
+                }
+                // paragraph
+                else {
+                    region = Region::Paragraph(vec![line.to_string()])
+                }
             }
             _ => todo!("other code elements"),
         }
@@ -42,21 +59,6 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, Error> {
 
     todo!("handle last element");
     Ok(elements)
-}
-
-pub fn parse_unordered_list(line: &String) -> Option<String> {
-    match line.split_once("- ") {
-        None => None,
-        Some((_, rhs)) => Some(rhs.to_string()),
-    }
-}
-
-pub fn parse_ordered_list(line: &String) -> Option<String> {
-    // there should be a 1. 2. (i.e. '.' to end the number)
-    match line.split_once('.') {
-        None => None,
-        Some((_, rhs)) => Some(rhs.to_string()),
-    }
 }
 
 #[cfg(test)]
