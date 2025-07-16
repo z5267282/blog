@@ -8,14 +8,12 @@ enum Region {
     Paragraph(Vec<String>),
 }
 
-pub type Error = (usize, String);
-
 // the title will be the name of the file
 // 1. '-' -> spaces
 // 2. capitalised off spaces
 
 /// Return an error with the line number and a diagnostic message if one occurred
-pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, Error> {
+pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
     let mut region = Region::NotSet;
     let mut elements: Vec<HTMLElement> = Vec::new();
 
@@ -58,7 +56,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Result<Vec<HTMLElement>, Error> {
     }
 
     todo!("handle last element");
-    Ok(elements)
+    elements
 }
 
 #[cfg(test)]
@@ -72,26 +70,13 @@ mod tests {
             .iter()
             .map(|s| s.to_string())
             .collect();
-        let result = parse_markdown(&code);
-        match result {
-            Err(_) => assert!(false),
-            Ok(elements) => {
-                assert!(elements.len() == 1);
-                match elements.first() {
-                    None => assert!(false),
-                    Some(element) => match element {
-                        HTMLElement::Code(lang, code_lines) => {
-                            assert!(lang == "py");
-                            let exp: Vec<String> = vec!["print('hello mate')", "print('cya')"]
-                                .iter()
-                                .map(|s| s.to_string())
-                                .collect();
-                            assert!(code_lines == &exp);
-                        }
-                        _ => assert!(false),
-                    },
-                }
-            }
-        }
+        let exp_code = vec!["print('hello mate')", "print('cya')"]
+            .iter()
+            .map(|s| s.to_string())
+            .collect();
+        assert_eq!(
+            parse_markdown(&code),
+            vec![HTMLElement::Code("py".to_string(), exp_code)]
+        );
     }
 }

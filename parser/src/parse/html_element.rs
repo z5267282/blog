@@ -1,3 +1,4 @@
+#[derive(Debug, PartialEq)]
 pub enum HTMLElement {
     Header(usize, String),
     Code(String, Vec<String>),
