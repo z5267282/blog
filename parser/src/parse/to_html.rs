@@ -60,20 +60,25 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                     region = Region::Code(lang, lines);
                 }
             }
-            // Region::OrderedList(mut list) => {
-            //     if line.starts_with(char::is_numeric) {
-            //         match line.split_once('.') {
-            //             // list item
-            //             Some((_, rhs)) => {
-            //                 list.push(rhs.trim_start().to_string());
-            //                 region = Region::OrderedList(list);
-            //             }
-            //             // end of list
-            //             None => region = Region::NotSet,
-            //         }
-            //     }
-            // }
-            _ => todo!("other code elements"),
+            // Region::OrderedList(mut list) => {}
+            // // Region::OrderedList(mut list) => {
+            // //     if line.starts_with(char::is_numeric) {
+            // //         match line.split_once('.') {
+            // //             // list item
+            // //             Some((_, rhs)) => {
+            // //                 list.push(rhs.trim_start().to_string());
+            // //                 region = Region::OrderedList(list);
+            // //             }
+            // //             // end of list
+            // //             None => region = Region::NotSet,
+            // //         }
+            // //     }
+            // // }
+            Region::OrderedList(list) => {}
+            Region::UnorderedList(mut list) => {
+                list.push(String::new());
+            }
+            Region::Paragraph(lines) => {}
         }
     }
 
