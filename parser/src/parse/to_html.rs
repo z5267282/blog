@@ -20,7 +20,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                 if line.starts_with('#') {
                     let content = line.trim_start_matches('#').trim_start().to_string();
                     let level = line.find(|c| c != '#').unwrap_or(0);
-                    elements.push(HTMLElement::Header(level, content));
+                    elements.push(HTMLElement::Header { level, content });
                 }
                 // code
                 else if line.starts_with("```") {
@@ -49,7 +49,10 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
             }
             Region::Code(lang, ref lines) => {
                 if line.starts_with("```") {
-                    elements.push(HTMLElement::Code(lang, lines.clone()));
+                    elements.push(HTMLElement::Code {
+                        language: lang,
+                        code: lines.clone(),
+                    });
                     region = Region::NotSet;
                 } else {
                     let mut updated_lines = lines.clone();
@@ -68,14 +71,14 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                         }
                         // end of list
                         None => {
-                            elements.push(HTMLElement::OrderedList(list.clone()));
+                            elements.push(HTMLElement::OrderedList { list: list.clone() });
                             region = Region::NotSet;
                         }
                     }
                 }
                 // assume that there is a blank line to separate the end of the list
                 else {
-                    elements.push(HTMLElement::OrderedList(list.clone()));
+                    elements.push(HTMLElement::OrderedList { list: list.clone() });
                     region = Region::NotSet;
                 }
             }
@@ -83,7 +86,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                 let no_leading_dash = line.trim_start_matches("- ");
                 // end of list
                 if no_leading_dash.len() == line.len() {
-                    elements.push(HTMLElement::UnorderedList(list.clone()));
+                    elements.push(HTMLElement::UnorderedList { list: list.clone() });
                     region = Region::NotSet;
                 } else {
                     let mut updated_list = list.clone();
@@ -94,7 +97,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
             Region::Paragraph(lines) => {
                 // end of paragraph and beginning of a new element
                 if line.is_empty() {
-                    elements.push(HTMLElement::Paragraph(lines));
+                    elements.push(HTMLElement::Paragraph { lines });
                     region = Region::NotSet;
                 } else {
                     let mut updated_lines = lines.clone();
@@ -107,10 +110,13 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
     }
 
     match region {
-        Region::Code(lang, code) => elements.push(HTMLElement::Code(lang, code)),
-        Region::OrderedList(list) => elements.push(HTMLElement::OrderedList(list)),
-        Region::UnorderedList(list) => elements.push(HTMLElement::UnorderedList(list)),
-        Region::Paragraph(lines) => elements.push(HTMLElement::Paragraph(lines)),
+        Region::Code(lang, code) => elements.push(HTMLElement::Code {
+            language: lang,
+            code,
+        }),
+        Region::OrderedList(list) => elements.push(HTMLElement::OrderedList { list }),
+        Region::UnorderedList(list) => elements.push(HTMLElement::UnorderedList { list }),
+        Region::Paragraph(lines) => elements.push(HTMLElement::Paragraph { lines }),
         _ => {}
     }
     elements
@@ -133,7 +139,10 @@ mod tests {
             .collect();
         assert_eq!(
             parse_markdown(&code),
-            vec![HTMLElement::Code("py".to_string(), exp_code)]
+            vec![HTMLElement::Code {
+                language: "py".to_string(),
+                code: exp_code
+            }]
         );
     }
 }

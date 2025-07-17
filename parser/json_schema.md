@@ -16,7 +16,7 @@ Each HTMLElement will be mapped to the following object structure.
 
 ```txt
 {
-    "type" : "header",
+    "type" : "Header",
     "level" : <number>,
     "content" : <string of header value>
 }
@@ -26,7 +26,7 @@ Each HTMLElement will be mapped to the following object structure.
 
 ```
 {
-    "type" : "code",
+    "type" : "Code",
     "language" : <string of language suffix - can be empty>,
     "code" : [<string of code lines>]
 }
@@ -36,7 +36,7 @@ Each HTMLElement will be mapped to the following object structure.
 
 ```
 {
-    "type" : "ordered list",
+    "type" : "OrderedList",
     "items" : [<string of list items where index has been stripped>]
 }
 ```
@@ -45,7 +45,7 @@ Each HTMLElement will be mapped to the following object structure.
 
 ```
 {
-    "type" : "unordered list",
+    "type" : "UnorderedList",
     "items" : [<string of list items where leading "- " has been stripped>]
 }
 ```
@@ -54,7 +54,7 @@ Each HTMLElement will be mapped to the following object structure.
 
 ```
 {
-    "type" : "paragraph",
+    "type" : "Paragraph",
     "lines" : [<string of content where trailing "  " has been stripped>]
 }
 ```
