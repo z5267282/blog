@@ -8,10 +8,6 @@ enum Region {
     Paragraph(Vec<String>),
 }
 
-// the title will be the name of the file
-// 1. '-' -> spaces
-// 2. capitalised off spaces
-
 /// Return an error with the line number and a diagnostic message if one occurred
 pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
     let mut region = Region::NotSet;

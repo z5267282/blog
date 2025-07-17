@@ -1,6 +1,7 @@
 # Overview
 
-This is a markdown parser for Markdown test, written in Rust.
+This is a markdown parser for Markdown test, written in Rust.  
+The full json schema is written [here](./json_schema.md).
 
 # Supported Markdown Language Features
 
