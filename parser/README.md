@@ -34,7 +34,8 @@ Paragraph 2.
 
 ### Ordered Lists
 
-These must start with a number and then a `'.'`.
+These must start with a number and then a `'.'`.  
+It is assumed that the lists are correctly enumerated from `[1,n]` for an `n`-sized list.
 
 ```txt
 1. one
