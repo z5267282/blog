@@ -1,3 +1,5 @@
+use parser::parse::dump_file::dump_blogs;
+
 fn main() -> () {
-    println!("todo");
+    dump_blogs();
 }
