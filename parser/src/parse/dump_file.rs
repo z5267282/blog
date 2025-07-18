@@ -29,7 +29,7 @@ pub fn dump_blogs() -> Result<(), std::io::Error> {
             let mut dump_path = PathBuf::from(&dump_folder);
             dump_path.push(json_name);
 
-            let mut file = File::open(&dump_path)?;
+            let mut file = File::create(&dump_path)?;
             file.write(contents.as_bytes())?;
             info!("dumped file {}", dump_path.display());
         }
