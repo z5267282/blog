@@ -1,5 +1,5 @@
 use std::fs::{create_dir, exists, read_dir, read_to_string, remove_dir, File};
-use std::io::Read;
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
 use serde_json::to_string_pretty;
@@ -52,7 +52,8 @@ pub fn dump_blogs() -> Result<(), std::io::Error> {
                 .to_string()
                 + ".md";
             dump_path.push(json_name);
-            // let mut file = File::open(path)
+            let mut file = File::open(&dump_path)?;
+            file.write(contents.as_bytes())?;
         }
     }
     Ok(())
