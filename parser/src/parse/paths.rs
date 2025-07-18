@@ -1,4 +1,7 @@
 /// Paths for dump files relative to the target directory.
 
-pub const MARKDOWN: &str = "../blog/lang";
-pub const JSON: &str = "../blog/lang-json-dump";
+// we will be in target/debug
+// so we need to go up by 3 levels
+
+pub const MARKDOWN: &str = "../../../blog/lang";
+pub const JSON: &str = "../../../blog/lang-json-dump";

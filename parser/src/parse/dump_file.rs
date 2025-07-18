@@ -56,12 +56,14 @@ fn join_dump_folder_path(md_path: &PathBuf) -> Result<PathBuf, std::io::Error> {
 /// Clear out the dump folder by deleting if necessary and then re-creating it.
 fn reset_dump_folder(path: &PathBuf) -> Result<(), std::io::Error> {
     info!("resetting folder {}", path.display());
-    if exists(&path).is_ok() {
-        remove_dir(&path)?;
-        info!("folder was deleted {}", path.display());
+    if let Ok(dir_exists) = exists(&path) {
+        if dir_exists {
+            remove_dir(&path)?;
+            info!("folder was deleted {}", path.display());
+        }
     }
     create_dir(&path)?;
-    info!("folder was re-created{}", path.display());
+    info!("folder was re-created {}", path.display());
     Ok(())
 }
 
@@ -91,13 +93,17 @@ fn prepare_json_filename_from_markdown_path(
 
 /// Read the markdown from a file and then return the dumped JSON string of its parsed contents
 fn dump_to_str(path: &PathBuf) -> Result<String, std::io::Error> {
-    info!("parsing markdown from {}", path.display());
+    info!("loading markdown from {}", path.display());
     let markdown = read_to_string(path)?
         .lines()
         .into_iter()
         .map(|s| s.to_string())
         .collect::<Vec<String>>();
+
+    info!("markdown loaded, preparing to parse");
     let json = parse_markdown(&markdown);
+
+    info!("markdown parsed");
     to_string_pretty::<Vec<HTMLElement>>(&json).map_err(|_| {
         std::io::Error::new(
             std::io::ErrorKind::Other,
