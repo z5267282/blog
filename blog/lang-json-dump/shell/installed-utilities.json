@@ -1,0 +1,17 @@
+[
+  {
+    "type": "Paragraph",
+    "lines": [
+      "These utilities were installed using `brew` on mac."
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "| Name  | Description                         |",
+      "| ----- | ----------------------------------- |",
+      "| `bat` | like `cat` with syntax highlighting |",
+      "| `fzf` | fuzzy find a file name given a term |"
+    ]
+  }
+]

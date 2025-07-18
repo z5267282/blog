@@ -1,0 +1,45 @@
+[
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Overview"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "Constructors have no return type, so how can you prematurely end one if you need to?"
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Error"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "This error will be shown if you try return something inside a constructor."
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "> error: constructor ... should not return a value [-Wreturn-type]"
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Solution"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "Constructors should throw an exception if they fail.",
+      "Although essentially a constructor is considered to have a return type of `void`."
+    ]
+  }
+]

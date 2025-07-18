@@ -1,0 +1,24 @@
+[
+  {
+    "type": "Paragraph",
+    "lines": [
+      "`!!` refers to the last run command."
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "echo hello",
+      "sudo !! # this is the same as",
+      "sudo echo hello"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "[guide](https://youtu.be/AVXYq8aL47Q?si=pSpSXghvq-Vq5P7p&t=524)"
+    ]
+  }
+]

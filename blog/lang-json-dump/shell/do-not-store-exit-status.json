@@ -1,0 +1,38 @@
+[
+  {
+    "type": "Paragraph",
+    "lines": [
+      "Do not store the exit status `$?` in a variable.  ",
+      "You will get this error:"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "",
+    "code": [
+      "read-only variable: status"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      ". The alternative would be to use a `trap` command.",
+      "According to this [so post](https://stackoverflow.com/questions/36921658/save-command-output-on-variable-and-check-exit-status):"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "",
+    "code": [
+      "I recommend against the use of $? as much as possible, as it is fragile and easy to overlook when refactoring"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "."
+    ]
+  }
+]

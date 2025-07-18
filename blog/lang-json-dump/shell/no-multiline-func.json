@@ -1,0 +1,22 @@
+[
+  {
+    "type": "Paragraph",
+    "lines": [
+      "One line functions are syntax errors, so this is a syntax error"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "handle() { basename \"$1\" }"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "."
+    ]
+  }
+]

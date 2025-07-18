@@ -1,0 +1,28 @@
+[
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Background"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "I read that `cat` is not strictly needed in `heredocs`."
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "",
+    "code": [
+      "Heredocs are a shell-syntax feature so they don't require cat specifically."
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "[Source](https://superuser.com/questions/1829271/how-do-i-pipe-a-heredoc)"
+    ]
+  }
+]

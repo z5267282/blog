@@ -1,0 +1,93 @@
+[
+  {
+    "type": "Paragraph",
+    "lines": [
+      "The ability for an empty glob to return no results can be turned on."
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Using `setopt`"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "The shell command is"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "setopt -s nullglob"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "."
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "The `(N)` character"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "The `(N)` character can be used to mimic this behaviour.",
+      "Eg. if there are these files:"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "txt",
+    "code": [
+      "a",
+      "b",
+      "c"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "then `echo fish*(N)` produces `` as per [here](https://unix.stackexchange.com/questions/26805/how-to-silently-get-an-empty-string-from-a-glob-pattern-with-no-matches)."
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Not using glob at all"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "Manually break the loop if the literal glob gets returned"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "for txt in *.txt",
+      "do",
+      "  [ -e \"$txt\" ] || break",
+      "  echo \"loading data from $txt\"",
+      "done"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "from [here](https://superuser.com/questions/519374/how-to-handle-bash-matching-when-there-are-no-matches)."
+    ]
+  }
+]

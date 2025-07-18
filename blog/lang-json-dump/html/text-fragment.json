@@ -1,0 +1,58 @@
+[
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Overview"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "Text fragments offer a way to direct to a specific spot in an HTML file.",
+      "The documentation from MDM is [here](https://developer.mozilla.org/en-US/docs/Web/URI/Fragment/Text_fragments#browser_compatibility).",
+      "Anchor `<a>` tags in their `href` can redirect to an element's id using a hash like so:"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "html",
+    "code": [
+      "<a href=\"#os.environ\">hello</a>"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "taken from [pydocs](https://docs.python.org/3/library/os.html#os.environ).",
+      "The fragment is captured in the url like so:"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "",
+    "code": [
+      "https://docs.python.org/3/library/os.html#os.environ"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "."
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Known Issues"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "[Some browsers](https://meta.stackoverflow.com/questions/425878/link-to-a-specific-spot-in-a-stack-overflow-question-answer) support the ability to create fragments based on a selection of text.",
+      "However Firefox does not support this and it is prone to breaking."
+    ]
+  }
+]

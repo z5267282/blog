@@ -1,0 +1,140 @@
+[
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Overview"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "1. Variable substitution occurs",
+      "2. Then globbing"
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Proof"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "If there are files"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "txt",
+    "code": [
+      "a aa b c"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "then the glob"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "a*"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "should have the files"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "txt",
+    "code": [
+      "a aa"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      ". If you run"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "echo a*"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "you will get the right answer"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "",
+    "code": [
+      "a aa"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      ". But if you put the glob in a variable it won't work."
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Script"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "```sh",
+      "touch a aa b c",
+      "echo a*",
+      "l='a*'",
+      "echo $l",
+      "```"
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Double Quotes"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "Note that if you try"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "echo \"$l\""
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "the star will get interpretted literally."
+    ]
+  }
+]

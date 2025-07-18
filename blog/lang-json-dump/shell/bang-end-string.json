@@ -1,0 +1,23 @@
+[
+  {
+    "type": "Paragraph",
+    "lines": [
+      "You cannot end a string with a bang like"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "echo \"fish!\"",
+      ">"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      ". The prompt (PS2) will be shown"
+    ]
+  }
+]

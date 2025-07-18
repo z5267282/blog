@@ -1,0 +1,24 @@
+[
+  {
+    "type": "Paragraph",
+    "lines": [
+      "To debug CSS we can set the outline of all elements to be a certain colour."
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "css",
+    "code": [
+      "* {",
+      "    outline:1px solid red!important",
+      "}"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "[Link](https://blog.openreplay.com/using-CSS-background-color-to-debug-web-pages/)"
+    ]
+  }
+]

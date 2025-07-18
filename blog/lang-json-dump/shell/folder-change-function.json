@@ -1,0 +1,34 @@
+[
+  {
+    "type": "Paragraph",
+    "lines": [
+      "Changing a folder in a function will persist outside it.  "
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "#!/bin/dash",
+      "",
+      "mkdir a",
+      "cd a",
+      "mkdir b",
+      "",
+      "change() {",
+      "    cd b",
+      "}",
+      "",
+      "change",
+      "# and not a",
+      "[ \"$(basename $(pwd))\" = b ]",
+      "exit $?"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      ""
+    ]
+  }
+]

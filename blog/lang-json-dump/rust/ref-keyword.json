@@ -1,0 +1,57 @@
+[
+  {
+    "type": "Paragraph",
+    "lines": [
+      "The `ref` keyword allows you unpack a pattern match item as a reference.  ",
+      "Normally, pattern matched items are moved."
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "rs",
+    "code": [
+      "let opt: Option<Vec<i32>> = Some(Vec<i32>::new());",
+      "match opt {",
+      "    // so here, vec is a reference",
+      "    Some(ref vec) => {},",
+      "    None => {}",
+      "}"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "It would seem more natural to do something like"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "rs",
+    "code": [
+      "Some(&vec)"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "but in Rust, only the right-hand side of an expression should have an `&`"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "rs",
+    "code": [
+      "let x = 10;",
+      "let y = &x; // we don't write let &y"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "."
+    ]
+  }
+]

@@ -1,0 +1,185 @@
+[
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Options"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "1. `find -exec command {} +` - work on aggregated file list",
+      "2. `find -exec [ command ] \\;` - work on individual files"
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 2,
+    "content": "Rough Shell Translation"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "1. `-exec command {} +`:"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "files='f1 f2 ... fn'",
+      "command f1 f2 ... fn"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "2. `-exec [ command ] \\;` is like:"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "files='f1 f2 ... fn'",
+      "command f1",
+      "command f2",
+      "...",
+      "command fn"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "## Delimiter"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "`{}` is the currently iterated file\\[s\\]."
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 2,
+    "content": "1 - `{} +`"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "1. `find` will aggregate all files (ie. say in a variable `fs`)",
+      "2. The `{}` will be unpacked like so: `command f1 f2 f3 ...`"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "So these two should be the same"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "echo 1 > james",
+      "echo 2 > jane",
+      "echo 3 > john",
+      "find . -name 'ja*' -exec cat {} +"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "```sh",
+      "echo 1 > james",
+      "echo 2 > jane",
+      "echo 3 > john",
+      "cat james jane",
+      "```"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      ". They both will output"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "",
+    "code": [
+      "1",
+      "2"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      ". So `command` needs to be able to take in multiple command line arguments."
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 2,
+    "content": "2 - `[ command ] \\;`"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "The `;` character is a delimeter to the `-exec` flag.",
+      "We can't type raw `;` because the shell will interpret it first.",
+      "Hence we need to escape it - `\\;`.",
+      "Since we are working with individual files you can use `{}` to mean the current file name."
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "sh",
+    "code": [
+      "touch james jane john",
+      "find . -name 'ja*' -exec echo \"{} says hello\" \\;"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "will output"
+    ]
+  },
+  {
+    "type": "Code",
+    "language": "",
+    "code": [
+      "james says hello",
+      "jane says hello"
+    ]
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "."
+    ]
+  },
+  {
+    "type": "Header",
+    "level": 1,
+    "content": "Sources"
+  },
+  {
+    "type": "Paragraph",
+    "lines": [
+      "",
+      "[baeldung](https://www.baeldung.com/linux/find-exec-command)"
+    ]
+  }
+]

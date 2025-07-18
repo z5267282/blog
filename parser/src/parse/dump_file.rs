@@ -1,5 +1,5 @@
 use log::info;
-use std::fs::{create_dir, exists, read_dir, read_to_string, remove_dir, File};
+use std::fs::{create_dir, exists, read_dir, read_to_string, remove_dir_all, File};
 use std::io::Write;
 use std::path::PathBuf;
 
@@ -58,7 +58,7 @@ fn reset_dump_folder(path: &PathBuf) -> Result<(), std::io::Error> {
     info!("resetting folder {}", path.display());
     if let Ok(dir_exists) = exists(&path) {
         if dir_exists {
-            remove_dir(&path)?;
+            remove_dir_all(&path)?;
             info!("folder was deleted {}", path.display());
         }
     }
@@ -85,9 +85,9 @@ fn prepare_json_filename_from_markdown_path(
             std::io::ErrorKind::Other,
             "could not convert file name string into UTF-8 for path {}",
         ))?
-        .trim_end_matches(".json")
+        .trim_end_matches(".md")
         .to_string()
-        + ".md";
+        + ".json";
     Ok(json_name)
 }
 
