@@ -1,6 +1,6 @@
 use std::fs::{create_dir, exists, read_dir, read_to_string, remove_dir, File};
-use std::io::{Read, Write};
-use std::path::{Path, PathBuf};
+use std::io::Write;
+use std::path::PathBuf;
 
 use serde_json::to_string_pretty;
 
@@ -31,7 +31,7 @@ pub fn dump_blogs() -> Result<(), std::io::Error> {
 
         for blog in read_dir(&read_path)? {
             let entry = blog?.path();
-            let contents = dump_to_str(&read_path)?;
+            let contents = dump_to_str(&entry)?;
             let mut dump_path = PathBuf::from(JSON);
             dump_path.push(language);
             let json_name = lang
