@@ -3,26 +3,24 @@
 This is a markdown parser for Markdown test, written in Rust.  
 The full json schema is written [here](./json_schema.md).
 
-To run, naviate to `target/debug` and then run this.
+This command will create the file `../website/public/blogs.json`.
 
 ```sh
-./parser
+cargo run
 ```
-
-This command will create the file `../website/public/blogs.json`.
 
 ## Options
 
 To add logging, prefix with this argument.
 
 ```sh
-RUST_LOG=info ./parser
+RUST_LOG=info ./target/debug/parser
 ```
 
 To turn on pretty printing, add this argument.
 
 ```sh
-./parser --pretty
+cargo run -- --pretty
 ```
 
 # Supported Markdown Language Features
