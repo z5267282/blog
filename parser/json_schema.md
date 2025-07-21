@@ -1,11 +1,13 @@
 # Overview
 
-Each JSON file will contain a list of HTMLElements.
+The parser will dump all markdown contents as a JSON object with this structure
 
 ```txt
-[
-    HTMLElements...
-]
+{
+    "<string of folder language>" : {
+        "<string of blog title>" : [<HTMLElement>...]
+    }
+}
 ```
 
 # Objects

@@ -4,4 +4,4 @@
 // so we need to go up by 3 levels
 
 pub const MARKDOWN: &str = "../../../blog/lang";
-pub const JSON: &str = "../../../blog/lang-json-dump";
+pub const JSON: &str = "../../../website/public/blog-lang.json";
