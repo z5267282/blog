@@ -1,12 +1,13 @@
 import "react";
 
 import AboutMe from "./pages/AboutMe";
+import BlogHub from "./pages/BlogHub";
 
 function App() {
   return (
     <>
-      <div>hello</div>
-      <AboutMe />
+      {/* <AboutMe /> */}
+      <BlogHub />
     </>
   );
 }
