@@ -21,7 +21,12 @@ export default function AboutMe() {
           Web Front-End: ReactJS, Tailwind CSS, Vanilla JavaScript, TypeScript
         </li>
       </ul>
-      <a href="mailto:sunny.chen1@unswalumni.com">Contact</a>
+      <p>
+        Contact:
+        <a href="mailto:sunny.chen1@unswalumni.com">
+          sunny.chen1@unswalumni.com
+        </a>
+      </p>
     </div>
   );
 }
