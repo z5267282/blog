@@ -3,13 +3,13 @@ use std::fs::{read_dir, read_to_string, File};
 use std::io::Write;
 use std::path::PathBuf;
 
-use serde_json::to_string_pretty;
+use serde_json::{to_string, to_string_pretty};
 
 use crate::parse::html_element::HTMLElement;
 use crate::parse::paths::{JSON, MARKDOWN};
 use crate::parse::to_html::parse_markdown;
 
-pub fn dump_blogs() -> Result<(), std::io::Error> {
+pub fn dump_blogs(pretty: bool) -> Result<(), std::io::Error> {
     info!("commencing dump of markdown blogs to json");
     info!("iterating through all languages in {}", MARKDOWN);
 
@@ -36,7 +36,7 @@ pub fn dump_blogs() -> Result<(), std::io::Error> {
     }
 
     let mut file = File::create(JSON)?;
-    let dump = dump_to_str(&parsed)?;
+    let dump = dump_to_str(&parsed, pretty)?;
     file.write(dump.as_bytes())?;
     info!("dumped file {}", JSON);
     Ok(())
@@ -94,9 +94,13 @@ fn gen_cannot_extract_basename(path: &PathBuf) -> std::io::Error {
     )
 }
 
-fn dump_to_str(parsed: &Vec<LanguageDump>) -> Result<String, std::io::Error> {
+fn dump_to_str(parsed: &Vec<LanguageDump>, pretty: bool) -> Result<String, std::io::Error> {
     info!("preparing to parse markdown");
-    let dumped = to_string_pretty::<Vec<LanguageDump>>(&parsed).map_err(|e| {
+    let dumper = match pretty {
+        true => to_string_pretty::<Vec<LanguageDump>>,
+        false => to_string,
+    };
+    let dumped = dumper(&parsed).map_err(|e| {
         std::io::Error::new(
             std::io::ErrorKind::Other,
             format!(
