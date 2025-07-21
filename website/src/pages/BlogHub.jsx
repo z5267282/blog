@@ -1,12 +1,11 @@
 import { useState } from "react";
 
+import blogs from "../blog-lang.json";
+
 export default function BlogHub() {
   // object of blogs
-  const [blogs, setBlogs] = useState(null);
+  // const [blogs, setBlogs] = useState(null);
+  console.log(blogs.length);
 
-  if (blogs === null) {
-    return <div>loading ...</div>;
-  } else {
-    return <div>blogs</div>;
-  }
+  return <div>blogs</div>;
 }
