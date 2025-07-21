@@ -9,6 +9,12 @@ This command will create the file `../website/public/blogs.json`.
 cargo run
 ```
 
+To run with logs, naviate to `target/debug` and then run this.
+
+```sh
+RUST_LOG=info ./parser
+```
+
 # Supported Markdown Language Features
 
 Not all language features are supported.  
