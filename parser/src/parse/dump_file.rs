@@ -1,5 +1,5 @@
 use log::info;
-use std::fs::{create_dir, exists, read_dir, read_to_string, remove_dir_all, File};
+use std::fs::{read_dir, read_to_string, File};
 use std::io::Write;
 use std::path::PathBuf;
 
@@ -12,87 +12,49 @@ use crate::parse::to_html::parse_markdown;
 pub fn dump_blogs() -> Result<(), std::io::Error> {
     info!("commencing dump of markdown blogs to json");
     info!("iterating through all languages in {}", MARKDOWN);
+
+    let mut parsed: Vec<LanguageDump> = vec![];
     for try_lang in read_dir(MARKDOWN)? {
         let lang = try_lang?.path();
         if !lang.is_dir() {
             continue;
         }
 
-        let dump_folder = join_dump_folder_path(&lang)?;
-        reset_dump_folder(&dump_folder)?;
+        let mut language = LanguageDump {
+            language: get_lang_name(&lang)?,
+            blogs: Vec::new(),
+        };
 
-        for blog in read_dir(&lang)? {
-            let entry = blog?.path();
-            let contents = dump_to_str(&entry)?;
-
-            let json_name = prepare_json_filename_from_markdown_path(&entry)?;
-            let mut dump_path = PathBuf::from(&dump_folder);
-            dump_path.push(json_name);
-
-            let mut file = File::create(&dump_path)?;
-            file.write(contents.as_bytes())?;
-            info!("dumped file {}", dump_path.display());
+        for entry in read_dir(&lang)? {
+            let blog = entry?.path();
+            let html = parse_blog(&blog)?;
+            let title = prepare_title(&blog)?;
+            language.blogs.push(Blog { title, html });
         }
+
+        parsed.push(language);
     }
+
+    let mut file = File::create(JSON)?;
+    let dump = dump_to_str(&parsed)?;
+    file.write(dump.as_bytes())?;
+    info!("dumped file {}", JSON);
     Ok(())
 }
 
-fn join_dump_folder_path(md_path: &PathBuf) -> Result<PathBuf, std::io::Error> {
-    info!("handling language {}", md_path.display());
-    let language = md_path.file_name().ok_or(std::io::Error::new(
-        std::io::ErrorKind::Other,
-        format!(
-            "basename could not be extracted from absolute path {}",
-            md_path.display()
-        ),
-    ))?;
-
-    // first get the dump path (i.e. where the JSON is written to)
-    let mut result = PathBuf::from(JSON);
-    result.push(language);
-    Ok(result)
+#[derive(serde::Serialize)]
+struct LanguageDump {
+    language: String,
+    blogs: Vec<Blog>,
 }
 
-/// Clear out the dump folder by deleting if necessary and then re-creating it.
-fn reset_dump_folder(path: &PathBuf) -> Result<(), std::io::Error> {
-    info!("resetting folder {}", path.display());
-    if let Ok(dir_exists) = exists(&path) {
-        if dir_exists {
-            remove_dir_all(&path)?;
-            info!("folder was deleted {}", path.display());
-        }
-    }
-    create_dir(&path)?;
-    info!("folder was re-created {}", path.display());
-    Ok(())
+#[derive(serde::Serialize)]
+struct Blog {
+    title: String,
+    html: Vec<HTMLElement>,
 }
 
-fn prepare_json_filename_from_markdown_path(
-    markdown_path: &PathBuf,
-) -> Result<String, std::io::Error> {
-    let json_name = markdown_path
-        // get the base filename from the full absolute path
-        .file_name()
-        .ok_or(std::io::Error::new(
-            std::io::ErrorKind::Other,
-            format!(
-                "basename could not be extracted from absolute path {}",
-                markdown_path.display()
-            ),
-        ))?
-        .to_str()
-        .ok_or(std::io::Error::new(
-            std::io::ErrorKind::Other,
-            "could not convert file name string into UTF-8 for path {}",
-        ))?
-        .trim_end_matches(".md")
-        .to_string()
-        + ".json";
-    Ok(json_name)
-}
-
-/// Read the markdown from a file and then return the dumped JSON string of its parsed contents
-fn dump_to_str(path: &PathBuf) -> Result<String, std::io::Error> {
+fn parse_blog(path: &PathBuf) -> Result<Vec<HTMLElement>, std::io::Error> {
     info!("loading markdown from {}", path.display());
     let markdown = read_to_string(path)?
         .lines()
@@ -102,15 +64,55 @@ fn dump_to_str(path: &PathBuf) -> Result<String, std::io::Error> {
 
     info!("markdown loaded, preparing to parse");
     let json = parse_markdown(&markdown);
+    info!("parsed json successfully from {}", path.display());
+    Ok(json)
+}
 
-    info!("markdown parsed");
-    to_string_pretty::<Vec<HTMLElement>>(&json).map_err(|_| {
+fn basename(path: &PathBuf) -> Result<String, std::io::Error> {
+    info!("trying to extract basename for {}", path.display());
+    let basename = path
+        .file_name()
+        .ok_or(gen_cannot_extract_basename(path))?
+        .to_str()
+        .ok_or(gen_cannot_extract_basename(path))?
+        .to_string();
+    info!("extracted basename {}", basename.as_str());
+    Ok(String::from(basename))
+}
+
+fn get_lang_name(lang: &PathBuf) -> Result<String, std::io::Error> {
+    basename(&lang)
+}
+
+fn gen_cannot_extract_basename(path: &PathBuf) -> std::io::Error {
+    std::io::Error::new(
+        std::io::ErrorKind::Other,
+        format!(
+            "basename could not be extracted from absolute path {}",
+            path.display()
+        ),
+    )
+}
+
+fn dump_to_str(parsed: &Vec<LanguageDump>) -> Result<String, std::io::Error> {
+    info!("preparing to parse markdown");
+    let dumped = to_string_pretty::<Vec<LanguageDump>>(&parsed).map_err(|e| {
         std::io::Error::new(
             std::io::ErrorKind::Other,
             format!(
-                "Serde error occurred when serialising parsed data in {}",
-                path.display()
+                "Serde error occurred when serialising parsed data: {}",
+                e.to_string()
             ),
         )
-    })
+    })?;
+    info!("markdown parsed");
+    Ok(dumped)
+}
+
+fn prepare_title(blog: &PathBuf) -> Result<String, std::io::Error> {
+    info!("preparing blog title for {}", blog.display());
+    let base = basename(blog)?;
+    let title = base.replace('-', " ").trim_end_matches(".md").to_string();
+    info!("prepared title {}", title.as_str());
+    Ok(title)
 }
