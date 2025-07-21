@@ -3,6 +3,12 @@
 This is a markdown parser for Markdown test, written in Rust.  
 The full json schema is written [here](./json_schema.md).
 
+This command will create the file `../website/public/blogs.json`.
+
+```sh
+cargo run
+```
+
 # Supported Markdown Language Features
 
 Not all language features are supported.  
@@ -56,16 +62,17 @@ These must start with `'- '`.
 
 If a language is provided it must be directly after the ` "```" `.
 
-## Unsupported - ❌
+## Frontend Rendered
 
-### Priority To Implement
+These are supported if nested inside a paragraph.  
+They will be parsed by the frontend as they only involve simple single-line string manipulations.
 
 - Links
-
-### Backlog
-
 - Bold Text
 - Italic Text
+
+## Unsupported - ❌
+
 - Blockquotes
 - Inline Code Bacticks
 - Horizontal Rules
