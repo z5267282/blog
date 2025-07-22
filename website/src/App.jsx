@@ -11,9 +11,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={ <AboutMe /> }>
+          <Route index element={ <div>home</div> } />
           <Route path="blogs" element={ <BlogHub /> } />
           <Route path="projects" element={ <Projects/> } />
-          <Route path="*" element={ <AboutMe /> } />
+          <Route path="*" element={ <div>not found</div> } />
         </Route>
       </Routes>
     </BrowserRouter>
