@@ -4,9 +4,13 @@ The parser will dump all markdown contents as a JSON object with this structure
 
 ```txt
 {
-    "<string of folder language>" : {
-        "<string of blog title>" : [<HTMLElement>...]
-    }
+    "language" : <string of language name>,
+    "blogs" : [
+        {
+            "title" : <string of blog title>,
+            "html" : [ <HTMLElement...> ]
+        }
+    ]
 }
 ```
 
@@ -39,7 +43,7 @@ Each HTMLElement will be mapped to the following object structure.
 ```
 {
     "type" : "OrderedList",
-    "items" : [<string of list items where index has been stripped>]
+    "list" : [<string of list items where index has been stripped>]
 }
 ```
 
@@ -48,7 +52,7 @@ Each HTMLElement will be mapped to the following object structure.
 ```
 {
     "type" : "UnorderedList",
-    "items" : [<string of list items where leading "- " has been stripped>]
+    "list" : [<string of list items where leading "- " has been stripped>]
 }
 ```
 
