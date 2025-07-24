@@ -12,16 +12,18 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AboutMe />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/blogs">
-          <Route index element={<BlogHub />} />
-          <Route path=":lang">
-            <Route index element={<LanguageHub />} />
-            <Route path=":title" element={<Blog />} />
+        <Route path="/">
+          <Route index element={<AboutMe />} />
+          <Route path="projects" element={<Projects />} />
+          <Route path="blogs">
+            <Route index element={<BlogHub />} />
+            <Route path=":lang">
+              <Route index element={<LanguageHub />} />
+              <Route path=":title" element={<Blog />} />
+            </Route>
           </Route>
+          <Route path="*" element={<div>not found :&#40;</div>} />
         </Route>
-        <Route path="/*" element={<div>not found :&#40;</div>} />
       </Routes>
     </BrowserRouter>
   );
