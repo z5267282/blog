@@ -1,9 +1,17 @@
 import { useParams } from "react-router-dom";
+import { URLtoBlog } from "../blogToURL";
+import { getBlog } from "../unpack";
 
 export default function Blog() {
-  const { title } = useParams();
+  let { lang, title } = useParams();
+  title = URLtoBlog(title);
 
-  return <div>blog {title}</div>;
+  return (
+    <>
+      <h1>blog {title}</h1>
+      {getBlog(lang, title).map((html) => genHTML(html))}
+    </>
+  );
 }
 
 const genHTML = (htmlData) => {
