@@ -66,9 +66,55 @@ const genHTML = (htmlData) => {
     }
     case "Paragraph": {
       const lines = htmlData.lines;
-      return <p>{lines.join(" ")}</p>;
+      // don't assign keys for now - the index will be used
+      return <>{lines.map((line) => parseAllInline(line))}</>;
     }
     default:
       return <p>ERROR: unsupported HTML type {htmlData.type}</p>;
+  }
+};
+
+/**
+ * Take in a line and parse all its inline HTML tags.
+ * @param {*} line string of the line to parse.
+ * @returns list of DOMElements of the parsed line.
+ */
+const parseAllInline = (line) => {
+  let parsed = parseFirstInlineFeature(line);
+  if (parsed === null) {
+    return [<p>{line}</p>];
+  }
+  const domElements = [];
+  while (parsed !== null) {
+    const { left, right, element } = parsed;
+    domElements.push(<p>{left}</p>);
+    domElements.push(element);
+    parsed = parseFirstInlineFeature(right);
+  }
+  return domElements;
+};
+
+const linkRegex = /\[([^\]+]+)\]\(([^)]+)\)/;
+
+/**
+ * Parse one line of a paragraph by trying to find the first inline element.
+ * This could be: a link, bold text, italix text or inline code.
+ * @param line string of the line to parse
+ * @returns null | { left: string of left text, right: string of left text, element: DOMElement of parsed feature[feature as DOMElement}
+ */
+const parseFirstInlineFeature = (line) => {
+  const link = line.match(linkRegex);
+  if (link !== null) {
+    const description = link[1];
+    const url = link[2];
+    return {
+      left: line.slice(0, link.index),
+      right: line.slice(link.index, link.index + link[0].length),
+      element: (
+        <a href={url} target="_blank">
+          {description}
+        </a>
+      ),
+    };
   }
 };
