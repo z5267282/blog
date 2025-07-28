@@ -66,8 +66,7 @@ const genHTML = (htmlData) => {
     }
     case "Paragraph": {
       const lines = htmlData.lines;
-      // don't assign keys for now - the index will be used
-      return <>{lines.map((line) => parseAllInline(line))}</>;
+      return <p>{lines.join(" ")}</p>;
     }
     default:
       return <p>ERROR: unsupported HTML type {htmlData.type}</p>;
@@ -117,4 +116,5 @@ const parseFirstInlineFeature = (line) => {
       ),
     };
   }
+  return null;
 };
