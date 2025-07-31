@@ -1,5 +1,7 @@
 import "react";
 
+import NavBar from "./NavBar";
+
 import AboutMe from "./pages/AboutMe";
 import BlogHub from "./pages/BlogHub";
 import Projects from "./pages/Projects";
@@ -11,6 +13,7 @@ import Blog from "./pages/Blog";
 function App() {
   return (
     <BrowserRouter>
+      <NavBar />
       <Routes>
         <Route path="/">
           <Route index element={<AboutMe />} />
