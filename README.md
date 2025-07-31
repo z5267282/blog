@@ -1,4 +1,3 @@
 # Overview
 
-A collection of language-specific semantics encountered during my programming journey.
-
+Source code for my personal blogging website.
