@@ -84,11 +84,11 @@ They will be parsed by the frontend as they only involve simple single-line stri
 - Links
 - Bold Text
 - Italic Text
+- Inline Code Bacticks
 
 ## Unsupported - ❌
 
 - Blockquotes
-- Inline Code Bacticks
 - Horizontal Rules
 - Images
 - HTML
