@@ -82,8 +82,8 @@ These are supported if nested inside a paragraph.
 They will be parsed by the frontend as they only involve simple single-line string manipulations.
 
 - Links
-- Bold Text
-- Italic Text
+- Bold Text, where asterisks are used `** bold text **`
+- Italic Text , where an asterisk is used `* italicised *`
 - Inline Code Bacticks
 
 ## Unsupported - ❌
