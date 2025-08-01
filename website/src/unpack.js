@@ -31,7 +31,6 @@ export const getBlog = (urlLang, title) => {
   if (langBlogs === undefined) {
     return [];
   }
-  console.log(langBlogs);
   let blogEntry = Array.from(langBlogs.blogs).find(
     (currBlog) => currBlog.title === title
   );

@@ -97,7 +97,6 @@ const parseOneLine = (lineContents) => {
       continue;
     }
 
-    // CODE
     const code = findCode(currSubLine);
     if (code != null) {
       const { contents, start, end } = code;
@@ -107,12 +106,21 @@ const parseOneLine = (lineContents) => {
       continue;
     }
 
+    // BOLD
+    const bold = findBold(currSubLine);
+    if (bold != null) {
+      const { contents, start, end } = bold;
+      content.push(currSubLine.slice(0, start));
+      content.push(<b>{contents}</b>);
+      currSubLine = currSubLine.slice(end);
+      continue;
+    }
+
+    // ITALICS
+
     // no feature found - stop parsing
     break;
   }
-
-  // BOLD
-  // ITALICS
 
   // before, feature and after
   // we add before to the current list of string literals and jsx that will populate the paragraph
@@ -125,7 +133,7 @@ const parseOneLine = (lineContents) => {
 /**
  * For a given line, try to find a link at the start.
  * A link looks like [desc](url).
- * If there is a URL then return its description url, and the [start, end) position in the original string of the url match in an object
+ * If there is a URL then return its description url, and the [start, end) position in the original string of the url match in an object.
  * Otherwise, return null.
  * @param {*} line - string : of the current line we are looking at.
  * @returns null | object containing the description and url of the object.
@@ -148,7 +156,7 @@ const findLink = (line) => {
 /**
  * For a given line, try to find an inline code snippet at the start.
  * Inline code looks like `print()` this - two backtics with non-backtics inside.
- * If there is a URL then return its contents, and the [start, end) position in the original string of the code match in an object
+ * If there is a URL then return its contents, and the [start, end) position in the original string of the code match in an object.
  * Otherwise, return null.
  * @param {*} line - string : of the current line we are looking at.
  * @returns null | object containing the description and url of the object.
@@ -163,6 +171,32 @@ const findCode = (line) => {
 
   return {
     contents: attempt[1],
+    start: attempt.index,
+    end: attempt.index + attempt[0].length,
+  };
+};
+
+/**
+ * For a given line, try to find a piece of bold text.
+ * Bold text looks like **this** where an asterisk can be escaped by a \ i.e. \*.
+ * If there is a bold then return its contents, and the [start, end) position in the original string of the code match in an object. The contents should replaced all escaped asterisks with just normal ones.
+ * Otherwise, return null.
+ * @param {*} line - string : of the current line we are looking at.
+ * @returns null | object containing the description and url of the object.
+ */
+const findBold = (line) => {
+  // okay to use non-posix ?: since this is supported by most browsers as per mdm.
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Non-capturing_group
+  const pattern = /\*{2}((?:[^*]|\\\*)+)\*{2}/;
+  const attempt = line.match(pattern);
+
+  if (attempt === null) {
+    return attempt;
+  }
+
+  const contents = attempt[1].replace("\\*", "*");
+  return {
+    contents,
     start: attempt.index,
     end: attempt.index + attempt[0].length,
   };
