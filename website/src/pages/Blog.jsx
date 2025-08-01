@@ -83,7 +83,25 @@ const parseOneLine = (lineContents) => {
   let currSubLine = lineContents;
   // find the leftmost inline feature we have to split based on:
 
+  while (currSubLine.length > 0) {
+    const link = findLink(currSubLine);
+    if (link != null) {
+      const { description, url, start, end } = link;
+      content.push(currSubLine.slice(0, start));
+      content.push(
+        <a href={url} target="_blank">
+          {description}
+        </a>
+      );
+      currSubLine = currSubLine.slice(end);
+    }
+
+    // no feature found - stop parsing
+    break;
+  }
+
   // LINK
+  // [non-bracket](non-parenthesis)
   // BOLD
   // ITALICS
   // CODE
@@ -92,51 +110,29 @@ const parseOneLine = (lineContents) => {
   // we add before to the current list of string literals and jsx that will populate the paragraph
   // we add the parsed feature
   // we keep going, but now we consider the current line to be after
+
   return <p>{content}</p>;
 };
 
-// /**
-//  * Take in a line and parse all its inline HTML tags.
-//  * @param {*} line string of the line to parse.
-//  * @returns list of DOMElements of the parsed line.
-//  */
-// const parseAllInline = (line) => {
-//   let parsed = parseFirstInlineFeature(line);
-//   if (parsed === null) {
-//     return [<p>{line}</p>];
-//   }
-//   const domElements = [];
-//   while (parsed !== null) {
-//     const { left, right, element } = parsed;
-//     domElements.push(<p>{left}</p>);
-//     domElements.push(element);
-//     parsed = parseFirstInlineFeature(right);
-//   }
-//   return domElements;
-// };
+/**
+ * For a given line, try to find a link at the start.
+ * A link looks like [desc](url).
+ * If there is a URL then return its description url, and the [start, end) position in the original string of the url match in an object
+ * Otherwise, return null.
+ * @param {*} line - string : of the current line we are looking at.
+ * @returns null | object containing the description and url of the object.
+ */
+const findLink = (line) => {
+  const pattern = /\[([^\]+]+)\]\(([^)]+)\)/;
+  const attempt = line.match(pattern);
+  if (attempt === null) {
+    return attempt;
+  }
 
-// const linkRegex = /\[([^\]+]+)\]\(([^)]+)\)/;
-
-// /**
-//  * Parse one line of a paragraph by trying to find the first inline element.
-//  * This could be: a link, bold text, italix text or inline code.
-//  * @param line string of the line to parse
-//  * @returns null | { left: string of left text, right: string of left text, element: DOMElement of parsed feature[feature as DOMElement}
-//  */
-// const parseFirstInlineFeature = (line) => {
-//   const link = line.match(linkRegex);
-//   if (link !== null) {
-//     const description = link[1];
-//     const url = link[2];
-//     return {
-//       left: line.slice(0, link.index),
-//       right: line.slice(link.index, link.index + link[0].length),
-//       element: (
-//         <a href={url} target="_blank">
-//           {description}
-//         </a>
-//       ),
-//     };
-//   }
-//   return null;
-// };
+  return {
+    description: attempt[1],
+    url: attempt[2],
+    start: attempt.index,
+    end: attempt.index + attempt[0].length,
+  };
+};
