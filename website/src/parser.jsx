@@ -1,10 +1,14 @@
+/**
+ * Parse inline code features.
+ */
+
+/**
+ * Find the left most feature of a line.
+ * @param {*} line : string - the current line we are looking at.
+ * @returns null - if there was no feature on the line.
+ * @returns object with the [start, end) position in the original line of the match and jsx of the parsed element.
+ */
 export default function findLeftMostFeature(currSubLine) {
-  /**
-   * Find the left most feature of a line.
-   * @param {*} line : string - the current line we are looking at.
-   * @returns null - if there was no feature on the line.
-   * @returns object with the [start, end) position in the original line of the match and jsx of the parsed element.
-   */
   const parsedOptions = parsers.map((parser) => parser.tryParse(currSubLine));
   let earliest = null;
   for (const option of parsedOptions) {
