@@ -1,5 +1,7 @@
 import "react";
 
+import "./App.css";
+
 import NavBar from "./NavBar";
 
 import AboutMe from "./pages/AboutMe";
