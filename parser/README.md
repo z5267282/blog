@@ -83,11 +83,12 @@ They will be parsed by the frontend as they only involve simple single-line stri
 
 - Links
 - Bold Text, where asterisks are used `** bold text **`
-- Italic Text , where an asterisk is used `* italicised *`
 - Inline Code Bacticks
 
 ## Unsupported - ❌
 
+- Italic Text
+- Strikethrough
 - Blockquotes
 - Horizontal Rules
 - Images
