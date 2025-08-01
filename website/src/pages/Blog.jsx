@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { URLtoBlog } from "../blogToURL";
 import { getBlog } from "../unpack";
+import { parsers } from "../inline-parse/parser";
 
 export default function Blog() {
   let { lang, title } = useParams();
@@ -81,123 +82,39 @@ const genHTML = (htmlData) => {
 const parseOneLine = (lineContents) => {
   const content = [];
   let currSubLine = lineContents;
-  // find the leftmost inline feature we have to split based on:
 
   while (currSubLine.length > 0) {
-    const link = findLink(currSubLine);
-    if (link != null) {
-      const { description, url, start, end } = link;
-      content.push(currSubLine.slice(0, start));
-      content.push(
-        <a className="text-blue-400 underline" href={url} target="_blank">
-          {description}
-        </a>
-      );
-      currSubLine = currSubLine.slice(end);
-      continue;
+    const first = findLeftMostFeature(currSubLine);
+    if (first === null) {
+      break;
     }
 
-    const code = findCode(currSubLine);
-    if (code != null) {
-      const { contents, start, end } = code;
-      content.push(currSubLine.slice(0, start));
-      content.push(<code>{contents}</code>);
-      currSubLine = currSubLine.slice(end);
-      continue;
-    }
-
-    // BOLD
-    const bold = findBold(currSubLine);
-    if (bold != null) {
-      const { contents, start, end } = bold;
-      content.push(currSubLine.slice(0, start));
-      content.push(<b>{contents}</b>);
-      currSubLine = currSubLine.slice(end);
-      continue;
-    }
-
-    // ITALICS
-
-    // no feature found - stop parsing
-    break;
+    const { jsx, start, end } = first;
+    content.push(currSubLine.slice(0, start));
+    content.push(jsx);
+    currSubLine = currSubLine.slice(end);
   }
-
-  // before, feature and after
-  // we add before to the current list of string literals and jsx that will populate the paragraph
-  // we add the parsed feature
-  // we keep going, but now we consider the current line to be after
 
   return <p>{content}</p>;
 };
 
 /**
- * For a given line, try to find a link at the start.
- * A link looks like [desc](url).
- * If there is a URL then return its description url, and the [start, end) position in the original string of the url match in an object.
- * Otherwise, return null.
- * @param {*} line - string : of the current line we are looking at.
- * @returns null | object containing the description and url of the object.
+ * Find the left most feature of a line.
+ * @param {*} line : string - the current line we are looking at.
+ * @returns null - if there was no feature on the line.
+ * @returns object with the [start, end) position in the original line of the match and jsx of the parsed element.
  */
-const findLink = (line) => {
-  const pattern = /\[([^\]+]+)\]\(([^)]+)\)/;
-  const attempt = line.match(pattern);
-  if (attempt === null) {
-    return attempt;
+const findLeftMostFeature = (currSubLine) => {
+  const parsedOptions = parsers.map((parser) => parser.tryParse(currSubLine));
+  let earliest = null;
+  for (const option of parsedOptions) {
+    if (option === null) {
+      continue;
+    }
+
+    if (earliest === null || option.start < earliest.start) {
+      earliest = option;
+    }
   }
-
-  return {
-    description: attempt[1],
-    url: attempt[2],
-    start: attempt.index,
-    end: attempt.index + attempt[0].length,
-  };
-};
-
-/**
- * For a given line, try to find an inline code snippet at the start.
- * Inline code looks like `print()` this - two backtics with non-backtics inside.
- * If there is a URL then return its contents, and the [start, end) position in the original string of the code match in an object.
- * Otherwise, return null.
- * @param {*} line - string : of the current line we are looking at.
- * @returns null | object containing the description and url of the object.
- */
-const findCode = (line) => {
-  const pattern = /`([^`]+)`/;
-  const attempt = line.match(pattern);
-
-  if (attempt === null) {
-    return attempt;
-  }
-
-  return {
-    contents: attempt[1],
-    start: attempt.index,
-    end: attempt.index + attempt[0].length,
-  };
-};
-
-/**
- * For a given line, try to find a piece of bold text.
- * Bold text looks like **this** where an asterisk can be escaped by a \ i.e. \*.
- * If there is a bold then return its contents, and the [start, end) position in the original string of the code match in an object. The contents should replaced all escaped asterisks with just normal ones.
- * Otherwise, return null.
- * @param {*} line - string : of the current line we are looking at.
- * @returns null | object containing the description and url of the object.
- */
-const findBold = (line) => {
-  // okay to use non-posix ?: since this is supported by most browsers as per mdm.
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Non-capturing_group
-  const pattern = /\*{2}((?:[^*]|\\\*)+)\*{2}/;
-  const attempt = line.match(pattern);
-
-  if (attempt === null) {
-    return attempt;
-  }
-
-  const contents = attempt[1].replace("\\*", "*");
-  return {
-    contents,
-    start: attempt.index,
-    end: attempt.index + attempt[0].length,
-  };
+  return earliest;
 };
