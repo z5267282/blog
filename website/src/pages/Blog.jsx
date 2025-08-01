@@ -8,7 +8,8 @@ export default function Blog() {
 
   return (
     <>
-      <h1>blog {title}</h1>
+      <title>{title}</title>
+      <header>blog {title}</header>
       {getBlog(lang, title).map((html) => genHTML(html))}
     </>
   );
