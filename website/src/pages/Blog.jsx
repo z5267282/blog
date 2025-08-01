@@ -94,17 +94,25 @@ const parseOneLine = (lineContents) => {
         </a>
       );
       currSubLine = currSubLine.slice(end);
+      continue;
+    }
+
+    // CODE
+    const code = findCode(currSubLine);
+    if (code != null) {
+      const { contents, start, end } = code;
+      content.push(currSubLine.slice(0, start));
+      content.push(<code>{contents}</code>);
+      currSubLine = currSubLine.slice(end);
+      continue;
     }
 
     // no feature found - stop parsing
     break;
   }
 
-  // LINK
-  // [non-bracket](non-parenthesis)
   // BOLD
   // ITALICS
-  // CODE
 
   // before, feature and after
   // we add before to the current list of string literals and jsx that will populate the paragraph
@@ -132,6 +140,29 @@ const findLink = (line) => {
   return {
     description: attempt[1],
     url: attempt[2],
+    start: attempt.index,
+    end: attempt.index + attempt[0].length,
+  };
+};
+
+/**
+ * For a given line, try to find an inline code snippet at the start.
+ * Inline code looks like `print()` this - two backtics with non-backtics inside.
+ * If there is a URL then return its contents, and the [start, end) position in the original string of the code match in an object
+ * Otherwise, return null.
+ * @param {*} line - string : of the current line we are looking at.
+ * @returns null | object containing the description and url of the object.
+ */
+const findCode = (line) => {
+  const pattern = /`([^`]+)`/;
+  const attempt = line.match(pattern);
+
+  if (attempt === null) {
+    return attempt;
+  }
+
+  return {
+    contents: attempt[1],
     start: attempt.index,
     end: attempt.index + attempt[0].length,
   };
