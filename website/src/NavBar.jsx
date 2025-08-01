@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useMatch } from "react-router-dom";
 
 export default function NavBar() {
   return (
@@ -22,6 +22,9 @@ function Tab({ path, contents, rightBorder = false }) {
   let classes = "list-none w-full h-full flex justify-center items-center";
   if (rightBorder) {
     classes += " border-r";
+  }
+  if (useMatch(path)) {
+    classes += " bg-blue-50";
   }
   return (
     <li className={classes}>
