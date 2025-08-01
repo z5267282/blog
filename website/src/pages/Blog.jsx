@@ -89,11 +89,7 @@ const parseOneLine = (lineContents) => {
       const { description, url, start, end } = link;
       content.push(currSubLine.slice(0, start));
       content.push(
-        <a
-          className="text-blue-600 visited:text-purple-600"
-          href={url}
-          target="_blank"
-        >
+        <a className="text-blue-400 underline" href={url} target="_blank">
           {description}
         </a>
       );
