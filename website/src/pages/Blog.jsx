@@ -16,7 +16,6 @@ export default function Blog() {
 }
 
 const genHTML = (htmlData) => {
-  console.log(htmlData);
   switch (htmlData.type) {
     case "Header": {
       const level = htmlData.level;
@@ -46,7 +45,6 @@ const genHTML = (htmlData) => {
     }
     case "OrderedList": {
       const list = htmlData.list;
-      console.log(list);
       return (
         <ol>
           {list.map((li) => (
@@ -67,7 +65,7 @@ const genHTML = (htmlData) => {
     }
     case "Paragraph": {
       const lines = htmlData.lines;
-      return <p>{lines.join(" ")}</p>;
+      return <div>{lines.map((line) => parseOneLine(line))}</div>;
     }
     default:
       return <p>ERROR: unsupported HTML type {htmlData.type}</p>;
@@ -75,47 +73,70 @@ const genHTML = (htmlData) => {
 };
 
 /**
- * Take in a line and parse all its inline HTML tags.
- * @param {*} line string of the line to parse.
- * @returns list of DOMElements of the parsed line.
+ * Take in one line and parse it into a paragraph.
+ * This paragraph can contained nested inline elements like links, code and bold text.
+ * @param {*} lineContents - string : of the current line.
+ * @returns A <p> tag with the line contents
  */
-const parseAllInline = (line) => {
-  let parsed = parseFirstInlineFeature(line);
-  if (parsed === null) {
-    return [<p>{line}</p>];
-  }
-  const domElements = [];
-  while (parsed !== null) {
-    const { left, right, element } = parsed;
-    domElements.push(<p>{left}</p>);
-    domElements.push(element);
-    parsed = parseFirstInlineFeature(right);
-  }
-  return domElements;
+const parseOneLine = (lineContents) => {
+  const content = [];
+  let currSubLine = lineContents;
+  // find the leftmost inline feature we have to split based on:
+
+  // LINK
+  // BOLD
+  // ITALICS
+  // CODE
+
+  // before, feature and after
+  // we add before to the current list of string literals and jsx that will populate the paragraph
+  // we add the parsed feature
+  // we keep going, but now we consider the current line to be after
+  return <p>{content}</p>;
 };
 
-const linkRegex = /\[([^\]+]+)\]\(([^)]+)\)/;
+// /**
+//  * Take in a line and parse all its inline HTML tags.
+//  * @param {*} line string of the line to parse.
+//  * @returns list of DOMElements of the parsed line.
+//  */
+// const parseAllInline = (line) => {
+//   let parsed = parseFirstInlineFeature(line);
+//   if (parsed === null) {
+//     return [<p>{line}</p>];
+//   }
+//   const domElements = [];
+//   while (parsed !== null) {
+//     const { left, right, element } = parsed;
+//     domElements.push(<p>{left}</p>);
+//     domElements.push(element);
+//     parsed = parseFirstInlineFeature(right);
+//   }
+//   return domElements;
+// };
 
-/**
- * Parse one line of a paragraph by trying to find the first inline element.
- * This could be: a link, bold text, italix text or inline code.
- * @param line string of the line to parse
- * @returns null | { left: string of left text, right: string of left text, element: DOMElement of parsed feature[feature as DOMElement}
- */
-const parseFirstInlineFeature = (line) => {
-  const link = line.match(linkRegex);
-  if (link !== null) {
-    const description = link[1];
-    const url = link[2];
-    return {
-      left: line.slice(0, link.index),
-      right: line.slice(link.index, link.index + link[0].length),
-      element: (
-        <a href={url} target="_blank">
-          {description}
-        </a>
-      ),
-    };
-  }
-  return null;
-};
+// const linkRegex = /\[([^\]+]+)\]\(([^)]+)\)/;
+
+// /**
+//  * Parse one line of a paragraph by trying to find the first inline element.
+//  * This could be: a link, bold text, italix text or inline code.
+//  * @param line string of the line to parse
+//  * @returns null | { left: string of left text, right: string of left text, element: DOMElement of parsed feature[feature as DOMElement}
+//  */
+// const parseFirstInlineFeature = (line) => {
+//   const link = line.match(linkRegex);
+//   if (link !== null) {
+//     const description = link[1];
+//     const url = link[2];
+//     return {
+//       left: line.slice(0, link.index),
+//       right: line.slice(link.index, link.index + link[0].length),
+//       element: (
+//         <a href={url} target="_blank">
+//           {description}
+//         </a>
+//       ),
+//     };
+//   }
+//   return null;
+// };
