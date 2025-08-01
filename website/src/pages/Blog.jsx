@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { URLtoBlog } from "../blogToURL";
 import { getBlog } from "../unpack";
-import { parsers } from "../inline-parse/parser";
+import { parsers } from "../parser";
 
 export default function Blog() {
   let { lang, title } = useParams();
