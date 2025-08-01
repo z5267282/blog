@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { URLtoBlog } from "../blogToURL";
 import { getBlog } from "../unpack";
-import findLeftMostFeature from "../parser";
+import parseOneLine from "../parser";
 
 export default function Blog() {
   let { lang, title } = useParams();
@@ -10,7 +10,7 @@ export default function Blog() {
   return (
     <>
       <title>{title}</title>
-      <header>blog {title}</header>
+      <header className="text-[2.5em]">{title}</header>
       {getBlog(lang, title).map((html) => genHTML(html))}
     </>
   );
@@ -23,11 +23,11 @@ const genHTML = (htmlData) => {
       const content = htmlData.content;
       switch (level) {
         case 1:
-          return <h1>{content}</h1>;
+          return <h1 className="text-[1.5em]">{content}</h1>;
         case 2:
-          return <h2>{content}</h2>;
+          return <h2 className="text-[1.25em]">{content}</h2>;
         case 3:
-          return <h3>{content}</h3>;
+          return <h3 className="text-[1.1em]">{content}</h3>;
         case 4:
           return <h4>{content}</h4>;
         case 5:
@@ -49,7 +49,9 @@ const genHTML = (htmlData) => {
       return (
         <ol>
           {list.map((li) => (
-            <li>{li}</li>
+            <li className="inline list-decimal list-inside">
+              {parseOneLine(li)}
+            </li>
           ))}
         </ol>
       );
@@ -59,41 +61,22 @@ const genHTML = (htmlData) => {
       return (
         <ul>
           {list.map((li) => (
-            <li>{li}</li>
+            <li>{parseOneLine(li)}</li>
           ))}
         </ul>
       );
     }
     case "Paragraph": {
       const lines = htmlData.lines;
-      return <div>{lines.map((line) => parseOneLine(line))}</div>;
+      return (
+        <div>
+          {lines.map((line) => (
+            <p>{parseOneLine(line)}</p>
+          ))}
+        </div>
+      );
     }
     default:
       return <p>ERROR: unsupported HTML type {htmlData.type}</p>;
   }
-};
-
-/**
- * Take in one line and parse it into a paragraph.
- * This paragraph can contained nested inline elements like links, code and bold text.
- * @param {*} lineContents - string : of the current line.
- * @returns A <p> tag with the line contents
- */
-const parseOneLine = (lineContents) => {
-  const content = [];
-  let currSubLine = lineContents;
-
-  while (currSubLine.length > 0) {
-    const first = findLeftMostFeature(currSubLine);
-    if (first === null) {
-      break;
-    }
-
-    const { jsx, start, end } = first;
-    content.push(currSubLine.slice(0, start));
-    content.push(jsx);
-    currSubLine = currSubLine.slice(end);
-  }
-
-  return <p>{content}</p>;
 };

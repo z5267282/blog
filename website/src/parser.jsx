@@ -3,12 +3,38 @@
  */
 
 /**
+ * Take in one line and split it up into content strings and jsx as they appear.
+ * The content should be wrapped in a parent like a <p> or a <div>.
+ * The line can contained nested inline elements like links, code and bold text.
+ * @param {*} lineContents - string : of the current line.
+ * @returns A <p> tag with the line contents
+ */
+export default function parseOneLine(lineContents) {
+  const content = [];
+  let currSubLine = lineContents;
+
+  while (currSubLine.length > 0) {
+    const first = findLeftMostFeature(currSubLine);
+    if (first === null) {
+      break;
+    }
+
+    const { jsx, start, end } = first;
+    content.push(currSubLine.slice(0, start));
+    content.push(jsx);
+    currSubLine = currSubLine.slice(end);
+  }
+
+  return <p>{content}</p>;
+}
+
+/**
  * Find the left most feature of a line.
  * @param {*} line : string - the current line we are looking at.
  * @returns null - if there was no feature on the line.
  * @returns object with the [start, end) position in the original line of the match and jsx of the parsed element.
  */
-export default function findLeftMostFeature(currSubLine) {
+const findLeftMostFeature = (currSubLine) => {
   const parsedOptions = parsers.map((parser) => parser.tryParse(currSubLine));
   let earliest = null;
   for (const option of parsedOptions) {
@@ -21,12 +47,12 @@ export default function findLeftMostFeature(currSubLine) {
     }
   }
   return earliest;
-}
+};
 
 /**
  * An abstract class representing a parsing interface for inline items.
  */
-export class parser {
+class parser {
   constructor(regex) {
     this.regex = regex;
   }
@@ -127,4 +153,4 @@ class bold extends parser {
   }
 }
 
-export const parsers = [new link(), new code(), new bold()];
+const parsers = [new link(), new code(), new bold()];
