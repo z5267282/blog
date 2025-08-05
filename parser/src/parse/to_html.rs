@@ -5,6 +5,7 @@ enum Region {
     Code(String, Vec<String>),
     OrderedList(Vec<String>),
     UnorderedList(Vec<String>),
+    Table(Vec<String>, Vec<Vec<String>>, bool),
     Paragraph(Vec<String>),
 }
 
@@ -42,6 +43,16 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                 else if line.starts_with("- ") {
                     region = Region::UnorderedList(vec![line.trim_start_matches("- ").to_string()]);
                 }
+                // table
+                else if line.starts_with("|") {
+                    let mut headers = Vec::new();
+
+                    for cell in line.trim_matches('|').split('|') {
+                        headers.push(cell.trim().to_string());
+                    }
+
+                    region = Region::Table(headers, Vec::new(), true);
+                }
                 // paragraph
                 else {
                     region = Region::Paragraph(vec![line.to_string()])
@@ -60,18 +71,17 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                     region = Region::Code(lang, updated_lines);
                 }
             }
-            Region::OrderedList(ref list) => {
+            Region::OrderedList(mut list) => {
                 if line.starts_with(char::is_numeric) {
                     match line.split_once('.') {
                         // list item
                         Some((_, rhs)) => {
-                            let mut updated_list = list.clone();
-                            updated_list.push(rhs.trim_start().to_string());
-                            region = Region::OrderedList(updated_list);
+                            list.push(rhs.trim_start().to_string());
+                            region = Region::OrderedList(list);
                         }
                         // end of list
                         None => {
-                            elements.push(HTMLElement::OrderedList { list: list.clone() });
+                            elements.push(HTMLElement::OrderedList { list });
                             region = Region::NotSet;
                         }
                     }
@@ -92,6 +102,24 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                     let mut updated_list = list.clone();
                     updated_list.push(no_leading_dash.to_string());
                     region = Region::UnorderedList(updated_list);
+                }
+            }
+            Region::Table(headers, mut rows, is_separator) => {
+                if is_separator {
+                    region = Region::Table(headers, rows, false);
+                } else if line.starts_with("|") {
+                    let mut next_row = Vec::new();
+                    for cell in line.trim_matches('|').split('|') {
+                        next_row.push(cell.trim().to_string());
+                    }
+                    rows.push(next_row);
+                    region = Region::Table(headers, rows, false);
+                } else {
+                    elements.push(HTMLElement::Table {
+                        headers,
+                        rows,
+                    });
+                    region = Region::NotSet;
                 }
             }
             Region::Paragraph(lines) => {
