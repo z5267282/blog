@@ -23,9 +23,9 @@ const genHTML = (htmlData) => {
       const content = htmlData.content;
       switch (level) {
         case 1:
-          return <h1 className="text-[1.5em]">{content}</h1>;
+          return <h1 className="text-[1.5em] my-[0.25em]">{content}</h1>;
         case 2:
-          return <h2 className="text-[1.25em]">{content}</h2>;
+          return <h2 className="text-[1.25em] my-[0.2em]">{content}</h2>;
         case 3:
           return <h3 className="text-[1.1em]">{content}</h3>;
         case 4:
@@ -71,7 +71,7 @@ const genHTML = (htmlData) => {
       return (
         <div>
           {lines.map((line) => (
-            <p>{parseOneLine(line)}</p>
+            <p className="wrap-break-word">{parseOneLine(line)}</p>
           ))}
         </div>
       );

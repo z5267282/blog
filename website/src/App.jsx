@@ -14,7 +14,7 @@ import Blog from "./pages/Blog";
 
 function App() {
   return (
-    <div className="bg-red-50 ml-[5vw] mr-[5vw]">
+    <div className="bg-red-50 ml-[10%] mr-[10%]">
       <BrowserRouter>
         <NavBar />
         <Routes>
