@@ -21,14 +21,19 @@ export default function NavBar() {
 function Tab({ path, contents, rightBorder = false }) {
   let classes = "list-none w-full h-full flex justify-center items-center";
   if (rightBorder) {
-    classes += " border-r";
+    classes += " border-r border-white";
   }
   if (useMatch(path)) {
     classes += " bg-blue-50";
   }
   return (
     <li className={classes}>
-      <Link to={path}>{contents}</Link>
+      <Link
+        className="w-full h-full flex justify-center items-center hover:bg-[#FFE2FC]"
+        to={path}
+      >
+        {contents}
+      </Link>
     </li>
   );
 }
