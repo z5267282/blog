@@ -1,3 +1,8 @@
+import Header1 from "../components/Header1";
+import HyperLink from "../components/HyperLink";
+import ListItemWithBoldPrefix from "../components/ListItemWithBoldPrefix";
+import LogoButton from "../components/LogoButton";
+
 export default function AboutMe() {
   return (
     <div className="pt-10 px-10 mx-[15%]">
@@ -84,44 +89,5 @@ export default function AboutMe() {
         </ol>
       </div>
     </div>
-  );
-}
-
-function Header1({ content }) {
-  return <h1 className="text-[1.5em]">{content}</h1>;
-}
-
-function ListItemWithBoldPrefix({ bold, normal }) {
-  return (
-    <li>
-      <b>{bold}</b>: {normal}
-    </li>
-  );
-}
-
-function HyperLink({ description, url }) {
-  return (
-    <a className="text-blue-400 underline" href={url} target="_blank">
-      {description}
-    </a>
-  );
-}
-
-/**
- * Create a button with an icon with an SVG path from: https://icons.getbootstrap.com/icons.
- */
-function LogoButton({ url, path }) {
-  return (
-    <a href={url}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="48"
-        height="48"
-        fill="currentColor"
-        viewBox="0 0 16 16"
-      >
-        <path d={path} />
-      </svg>
-    </a>
   );
 }
