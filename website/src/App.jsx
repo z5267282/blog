@@ -6,7 +6,7 @@ import NavBar from "./NavBar";
 
 import AboutMe from "./pages/AboutMe";
 import BlogHub from "./pages/BlogHub";
-import Projects from "./pages/Projects";
+import ProjectHub from "./pages/ProjectHub";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LanguageHub from "./pages/LanguageHub";
@@ -21,7 +21,7 @@ export default function App() {
           <Routes>
             <Route path="/">
               <Route index element={<AboutMe />} />
-              <Route path="projects" element={<Projects />} />
+              <Route path="projects" element={<ProjectHub />} />
               <Route path="blogs">
                 <Route index element={<BlogHub />} />
                 <Route path=":lang">
