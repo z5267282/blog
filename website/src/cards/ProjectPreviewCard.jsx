@@ -1,6 +1,5 @@
 import Header2 from "../components/Header2";
 import Header3 from "../components/Header3";
-import { Link } from "react-router-dom";
 
 export default function ProjectPreviewCard({
   url,
@@ -10,9 +9,10 @@ export default function ProjectPreviewCard({
   technologies,
 }) {
   return (
-    <Link
-      to={url}
+    <a
+      href={url}
       className="block w-3/4 min-h-min bg-[#FFE1AF] rounded-lg p-5"
+      target="_blank"
     >
       <div className="grid grid-cols-[70%_30%]">
         <b>
@@ -30,6 +30,6 @@ export default function ProjectPreviewCard({
         <Header3 content="Technologies" />
       </b>
       <p>{technologies}</p>
-    </Link>
+    </a>
   );
 }
