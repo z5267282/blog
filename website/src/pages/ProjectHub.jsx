@@ -8,7 +8,7 @@ export default function ProjectHub() {
       <div className="flex justify-center items-center h-[calc(1.5em_+20px)] pt-[20px]">
         <Header1 content="My Projects" />
       </div>
-      <div className="mt-10 w-full flex flex-col items-center">
+      <div className="mt-10 w-full flex flex-col items-center gap-y-[30px]">
         <FocusTrackerPreview />
         <MvePreview />
       </div>
