@@ -9,8 +9,9 @@ export default function ProjectHub() {
         <Header1 content="My Projects" />
       </div>
       <div className="mt-10 w-full flex flex-col items-center gap-y-[30px]">
-        <FocusTrackerPreview />
+        <BlogMarkdownParserPreview />
         <MvePreview />
+        <FocusTrackerPreview />
       </div>
     </div>
   );
@@ -38,4 +39,16 @@ function MvePreview() {
       technologies="Written as a Python module with tests written in Shell."
     />
   );
+}
+
+function BlogMarkdownParserPreview() {
+  return (
+    <ProjectPreviewCard
+      url="https://github.com/z5267282/blog/tree/main/parser"
+      title="Markdown Blog Parser"
+      dates="2025"
+      description="An open-source parser that takes in Markdown text and structures in into a fixed-JSON format."
+      technologies="Written entirely in Rust."
+    />
+  )
 }
