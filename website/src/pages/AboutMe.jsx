@@ -5,19 +5,8 @@ import LogoButton from "../components/LogoButton";
 
 export default function AboutMe() {
   return (
-    <div className="pt-10 px-10 mx-[15%]">
-      <div className="grid grid-cols-[70%_25%] gap-x-10">
-        <span className="flex justify-center items-center">
-          <div className="h-auto w-auto">
-            <Header1 content="About Me" />
-            <p>
-              Hi, I'm Sunny. I graduated from Software Engineering at UNSW in
-              December of 2024. I'm currently a course developer and tutor for
-              the Advanced C++ Programming Course. This website showcases some
-              of my coding projects and blogs. Enjoy!
-            </p>
-          </div>
-        </span>
+    <div className="pt-10 px-10 mx-[10%]">
+      <div className="w-full h-full flex justify-center items-center">
         <img
           // format from here: https://stackoverflow.com/questions/10311092/displaying-files-e-g-images-stored-in-google-drive-on-a-website
           src="https://lh3.googleusercontent.com/d/1pO_ty9Cs7ZkRTOOrmRTa_lzkxgPWrVfU"
@@ -28,6 +17,15 @@ export default function AboutMe() {
           height="200"
           className="inline"
         />
+      </div>
+      <div className="mt-5 h-auto w-auto">
+        <Header1 content="About Me" />
+        <p>
+          Hi, I'm Sunny. I graduated from Software Engineering at UNSW in
+          December of 2024. I'm currently a course developer and tutor for
+          the Advanced C++ Programming Course. This website showcases some
+          of my coding projects and blogs. Enjoy!
+        </p>
       </div>
       <div className="mt-5">
         <Header1 content="What I've Worked On" />
@@ -50,7 +48,7 @@ export default function AboutMe() {
           />
           &nbsp;was written in Tailwind and React JS.
         </p>
-        <ol>
+        <ol className="mt-2.5">
           <ListItemWithBoldPrefix
             bold="General-Purpose Languages"
             normal="C, Java, C++, Python, Rust"
