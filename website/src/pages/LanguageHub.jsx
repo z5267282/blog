@@ -12,7 +12,6 @@ export default function LanguageHub() {
   
   // mobile grid: flex flex-col items-center gap-y-[20px]
 
-
   return (
     <div className="min-h-screen">
       <div className="flex justify-center items-center h-[calc(1.5em_+20px)] pt-[20px]">
