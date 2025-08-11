@@ -4,7 +4,7 @@ import ProjectPreviewCard from "../cards/ProjectPreviewCard";
 
 export default function ProjectHub() {
   return (
-    <div className="min-h-screen">
+    <div className="pb-[15px]">
       <div className="flex justify-center items-center h-[calc(1.5em_+20px)] pt-[20px]">
         <Header1 content="My Projects" />
       </div>
