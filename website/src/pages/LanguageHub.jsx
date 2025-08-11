@@ -15,11 +15,11 @@ export default function LanguageHub() {
   const desktopGrid = "ld:grid lg:grid-cols-3 lg:gap-y-[30px]";
 
   const mobileCell = "w-3/4 h-[0.75em] min-h-min justify-self-center";
-  const tabletCell = "md:ml-[20%] md:min-h-min md:h-[1.5em] md:justify-self-start";
+  const tabletCell = "md:min-h-min md:h-[1.5em] md:justify-self-center";
   const desktopCell = "lg:ml-0 lg:h-[2em] lg:w-3/4";
 
   return (
-    <div className="h-auto min-h-min overflow-y-auto pb-[50px] md:pb-0 lg:pb-0">
+    <div className="pb-[15px] md:pb-0 lg:pb-0">
       <div className="flex justify-center items-center h-[calc(1.5em_+20px)] pt-[20px]">
         <Header1 content={`Language-Semantics for ${lang}`} />
       </div>
