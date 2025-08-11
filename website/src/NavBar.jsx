@@ -23,7 +23,7 @@ function Tab({ path, contents, rightBorder = false }) {
   if (rightBorder) {
     classes += " border-r-[5px]"
   }
-  if (useMatch(path)) {
+  if (useMatch(`${path}/*`)) {
     classes += " bg-[#AFCDFF]";
   }
   return (
