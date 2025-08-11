@@ -9,17 +9,23 @@ export default function LanguageHub() {
 
   const titles = Array.from(getBlogTitlesForLanguage(lang));
   titles.sort();
-  
-  // mobile grid: flex flex-col items-center gap-y-[20px]
+
+  const mobileGrid = "grid center grid-cols-1 gap-y-[40px]";
+  const tabletGrid = "md:grid md:grid-cols-2 md:gap-y-[30px] md:pb-[10px]";
+  const desktopGrid = "ld:grid lg:grid-cols-3 lg:gap-y-[30px]";
+
+  const mobileCell = "w-3/4 h-[0.75em] min-h-min justify-self-center";
+  const tabletCell = "md:ml-[20%] md:min-h-min md:h-[1.5em] md:justify-self-start";
+  const desktopCell = "lg:ml-0 lg:h-[2em] lg:w-3/4";
 
   return (
-    <div className="min-h-screen">
+    <div className="h-auto min-h-min overflow-y-auto pb-[50px] md:pb-0 lg:pb-0">
       <div className="flex justify-center items-center h-[calc(1.5em_+20px)] pt-[20px]">
         <Header1 content={`Language-Semantics for ${lang}`} />
       </div>
-      <ul className="mt-10 w-full h-auto grid grid-cols-3 gap-y-[30px]">
+      <ul className={`mt-10 w-full h-auto pg-5 ${mobileGrid} ${tabletGrid} ${desktopGrid}`}>
         {titles.map((title, i) => (
-          <li className={`h-[2em] w-3/4 ${alignDesktopViewPortCell(i)}`} key={`${lang} - ${title}`}>
+          <li className={`${mobileCell} ${tabletCell} ${desktopCell} ${alignDesktopViewPortCell(i)}`} key={`${lang} - ${title}`}>
             <Link
               className="flex justify-center items-center h-full w-full text-[1.em] bg-[#fff4e2] rounded-lg p-5 hover:bg-[#FFE1AF]"
               to={`/blogs/${lang}/${blogToURL(title)}`}
@@ -45,9 +51,9 @@ export default function LanguageHub() {
 function alignDesktopViewPortCell(index) {
   // it had to be justify-self center since justify-items didn't work
   switch (index % 3) {
-    case 0: return "justify-self-end";
-    case 1: return "justify-self-center";
+    case 0: return "lg:justify-self-end";
+    case 1: return "lg:justify-self-center";
     // 2
-    default: return "justify-self-start";
+    default: return "lg:justify-self-start";
   }
 }
