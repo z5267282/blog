@@ -24,7 +24,7 @@ function Tab({ path, contents, rightBorder = false }) {
     classes += " border-r border-white";
   }
   if (useMatch(path)) {
-    classes += " bg-blue-50";
+    classes += " bg-[#AFCDFF]";
   }
   return (
     <li className={classes}>

@@ -11,7 +11,7 @@ export default function ProjectPreviewCard({
   return (
     <a
       href={url}
-      className="block w-1/2 min-h-min bg-[#fff4e2] rounded-lg p-5"
+      className="block w-1/2 min-h-min bg-[#fff4e2] rounded-lg p-5 hover:bg-[#FFE1AF]"
       target="_blank"
     >
       <div className="grid grid-cols-[70%_30%]">
