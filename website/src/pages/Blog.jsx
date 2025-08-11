@@ -8,11 +8,12 @@ export default function Blog() {
   title = URLtoBlog(title);
 
   return (
-    <>
-      <title>{title}</title>
-      <header className="text-[2.5em]">{title}</header>
-      {getBlog(lang, title).map((html) => genHTML(html))}
-    </>
+    <div className="min-y-screen">
+      <header className="text-[1.5em] flex justify-center items-center h-[calc(1.5em_+20px)] w-full pt-[20px]">{title}</header>
+      <div className="w-full h-auto ml-[10vw] mr-[10vw] px-10">
+        {getBlog(lang, title).map((html) => genHTML(html))}
+      </div>
+    </div>
   );
 }
 
@@ -23,9 +24,9 @@ const genHTML = (htmlData) => {
       const content = htmlData.content;
       switch (level) {
         case 1:
-          return <h1 className="text-[1.5em]">{content}</h1>;
+          return <h1 className="text-[1.5em] my-[0.25em]">{content}</h1>;
         case 2:
-          return <h2 className="text-[1.25em]">{content}</h2>;
+          return <h2 className="text-[1.25em] my-[0.2em]">{content}</h2>;
         case 3:
           return <h3 className="text-[1.1em]">{content}</h3>;
         case 4:
@@ -71,7 +72,7 @@ const genHTML = (htmlData) => {
       return (
         <div>
           {lines.map((line) => (
-            <p>{parseOneLine(line)}</p>
+            <p className="wrap-break-word">{parseOneLine(line)}</p>
           ))}
         </div>
       );

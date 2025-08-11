@@ -2,11 +2,11 @@ import { Link, useMatch } from "react-router-dom";
 
 export default function NavBar() {
   return (
-    <nav>
-      <ol className="bg-green-50 w-1/4 h-[2em] grid grid-rows-1 grid-cols-3 text-[1.5em]">
-        <Tab path="/" contents="home" rightBorder />
-        <Tab path="/projects" contents="projects" rightBorder />
-        <Tab path="/blogs" contents="blogs" />
+    <nav className="bg-[#e2edff] w-screen h-[35px] flex justify-center align-center">
+      <ol className="w-1/2 flex flex-row justify-center align-center">
+        <Tab path="/" contents="home" />
+        <Tab path="/projects" contents="projects" />
+        <Tab path="/blogs" contents="blogs" rightBorder />
       </ol>
     </nav>
   );
@@ -19,16 +19,21 @@ export default function NavBar() {
  * @prop rightBorder: bool - whether to set the right border or not.
  */
 function Tab({ path, contents, rightBorder = false }) {
-  let classes = "list-none w-full h-full flex justify-center items-center";
+  let classes = "list-none w-full h-full flex justify-center items-center border-l-[5px] border-white"
   if (rightBorder) {
-    classes += " border-r";
+    classes += " border-r-[5px]"
   }
-  if (useMatch(path)) {
-    classes += " bg-blue-50";
+  if (useMatch(`${path}/*`)) {
+    classes += " bg-[#AFCDFF]";
   }
   return (
     <li className={classes}>
-      <Link to={path}>{contents}</Link>
+      <Link
+        className="w-full h-full flex justify-center items-center hover:bg-[#FFE2FC]"
+        to={path}
+      >
+        {contents}
+      </Link>
     </li>
   );
 }
