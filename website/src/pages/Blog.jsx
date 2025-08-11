@@ -9,7 +9,6 @@ export default function Blog() {
 
   return (
     <div className="min-y-screen">
-      <title>{title}</title>
       <header className="text-[1.5em] flex justify-center items-center h-[calc(1.5em_+20px)] w-full pt-[20px]">{title}</header>
       <div className="w-full h-auto ml-[10vw] mr-[10vw] px-10">
         {getBlog(lang, title).map((html) => genHTML(html))}

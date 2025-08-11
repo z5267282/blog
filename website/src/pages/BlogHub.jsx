@@ -9,6 +9,7 @@ export default function BlogHub() {
 
   return (
     <div className="min-h-screen">
+      <title>sunny | blogs</title>
       <div className="flex justify-center items-center h-[calc(1.5em_+20px)] pt-[20px]">
         <Header1 content="Language-Semantic Blogs" />
       </div>

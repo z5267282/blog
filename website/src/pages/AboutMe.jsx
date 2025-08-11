@@ -6,6 +6,7 @@ import LogoButton from "../components/LogoButton";
 export default function AboutMe() {
   return (
     <div className="pt-10 px-10 mx-[10%]">
+      <title>sunny | home</title>
       <div className="w-full h-full flex justify-center items-center">
         <img
           // format from here: https://stackoverflow.com/questions/10311092/displaying-files-e-g-images-stored-in-google-drive-on-a-website
