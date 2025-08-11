@@ -4,13 +4,16 @@ import { getLanguages } from "../unpack";
 import Header1 from "../components/Header1";
 
 export default function BlogHub() {
+  const languages = Array.from(getLanguages());
+  languages.sort();
+
   return (
     <div className="min-h-screen">
       <div className="flex justify-center items-center h-[calc(1.5em_+20px)] pt-[20px]">
         <Header1 content="Language-Semantic Blogs" />
       </div>
       <ul className="mt-10 w-full h-auto flex flex-col items-center gap-y-[20px]">
-        {getLanguages().map((language) => (<LanguageLinkCard language={language} />))}
+        {languages.map((language) => (<LanguageLinkCard language={language} />))}
       </ul>
     </div>
   );
