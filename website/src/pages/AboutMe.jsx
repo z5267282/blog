@@ -61,6 +61,10 @@ export default function AboutMe() {
             bold="Front-End Development"
             normal="HTML, CSS, Vanilla JS, Typescript, React JS, Tailwind CSS"
           />
+          <ListItemWithBoldPrefix
+            bold="Cloud"
+            normal="AWS Suite: Lambda, S3, EC2"
+          />
         </ol>
       </div>
       <div className="mt-5">
