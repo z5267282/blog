@@ -1,82 +1,43 @@
+# Overview
+
+This blog covers how to use the `find` shell command.  
+It is very useful for running a shell command on multiple files matching a certain filter.
+
 # Options
 
-1. `find -exec command {} +` - work on aggregated file list
-2. `find -exec [ command ] \;` - work on individual files
-
-## Rough Shell Translation
-
-1. `-exec command {} +`:
+## 1. Aggregate Files
 
 ```sh
-files='f1 f2 ... fn'
-command f1 f2 ... fn
+find -exec command {} +
 ```
 
-2. `-exec [ command ] \;` is like:
+Run `command` once and `{}` is passed as its argument list.  
+This can be roughly translated in Shell like so.
 
 ```sh
-files='f1 f2 ... fn'
-command f1
-command f2
-...
-command fn
+command {1} {2} ... {n}
 ```
 
-## Delimiter
-
-`{}` is the currently iterated file\[s\].
-
-## 1 - `{} +`
-
-1. `find` will aggregate all files (ie. say in a variable `fs`)
-2. The `{}` will be unpacked like so: `command f1 f2 f3 ...`
-
-So these two should be the same
+## 2. Individually Run
 
 ```sh
-echo 1 > james
-echo 2 > jane
-echo 3 > john
-find . -name 'ja*' -exec cat {} +
+find -exec command \;`
 ```
+
+Run `command` on all arguments given to `{}`.
+This can be roughly translated in Shell like so.
 
 ```sh
-echo 1 > james
-echo 2 > jane
-echo 3 > john
-cat james jane
+command {1}
+command {2}
+command {...}
+command {n}
 ```
-
-. They both will output
-
-```
-1
-2
-```
-
-. So `command` needs to be able to take in multiple command line arguments.
-
-## 2 - `[ command ] \;`
 
 The `;` character is a delimeter to the `-exec` flag.  
 We can't type raw `;` because the shell will interpret it first.  
-Hence we need to escape it - `\;`.  
-Since we are working with individual files you can use `{}` to mean the current file name.
-
-```sh
-touch james jane john
-find . -name 'ja*' -exec echo "{} says hello" \;
-```
-
-will output
-
-```
-james says hello
-jane says hello
-```
-
-.
+Hence we need to escape it - `\;`.
 
 # Sources
 
-[baeldung](https://www.baeldung.com/linux/find-exec-command)
+1. [baeldung](https://www.baeldung.com/linux/find-exec-command)
