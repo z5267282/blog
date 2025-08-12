@@ -1,12 +1,12 @@
-In `bash`, how the shell processes arguments expanded via
+# Overview
+
+In Bash, the shell processes arguments from unquoted variables based on the `IFS` variable.
 
 ```sh
 command $var
 ```
 
-where `$var` is unquoted depends on the `IFS` variable.
-More information [here](https://unix.stackexchange.com/questions/26661/what-is-word-splitting-why-is-it-important-in-shell-programming/26672#26672).
-Normally, this
+# Example
 
 ```sh
 bash
@@ -14,10 +14,12 @@ A='a b c'
 python3 -c 'import sys; print(",".join(sys.argv))' $A
 ```
 
-will run `command` with three arguments `a b c`.  
+This will run `python3` with three arguments `a b c`.  
 This is because there is normally whitespace in `IFS`.
 
-Here is an example of something that will only run correctly on `zsh` compared to `bash`
+# Z-Shell vs Bash
+
+Here is an example of something that will only run correctly on `zsh` compared to `bash`.
 
 ```sh
 #!/bin/zsh
@@ -31,20 +33,20 @@ do
 done
 ```
 
-.
+The following is the Z-Shell output.
 
-In `zsh`
-
-```
-'foo:bar:foobar' is the splitted word
+```txt
+foo:bar:foobar
 ```
 
-compared to `bash`
+Comparatively, this is the Bash output.
 
-```
+```txt
 'foo' is the splitted word
 'bar' is the splitted word
 'foobar' is the splitted word
 ```
 
-.
+# Sources
+
+1. [Stack Exchange](https://unix.stackexchange.com/questions/26661/what-is-word-splitting-why-is-it-important-in-shell-programming/26672#26672)

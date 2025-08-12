@@ -1,6 +1,6 @@
 # Overview
 
-A list of handy Shell utilities.
+This is a list of handy Shell utilities.
 
 | Utility    | Overview                                           | Mac (y/n) |
 | ---------- | -------------------------------------------------- | --------- |
@@ -8,4 +8,3 @@ A list of handy Shell utilities.
 | `paste`    | join matching line numbers in files by a delimiter | y         |
 | `realpath` | get the absoulte path for a given file             | y         |
 | `fc`       | edit the last shell command in editor              | y         |
-

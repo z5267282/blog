@@ -1,6 +1,11 @@
 # Overview
 
-Should I put a newline at the end of a file?
+Should newlines be put at the end of a file?
+
+## Vim
+
+Using `vim`, an ending lone newline will not be shown.  
+Hence if you add an extra one in, there will be two lone newlines at the end of the file.
 
 ## Yes
 
@@ -13,5 +18,4 @@ When running `cat` on the file, an extra newline will get printed out.
 # Conclusion
 
 Yes a newline should be put in.  
-`cat` is for command-line viewing of files only.  
-I would prioritise the experience when I'm editing files.
+The `cat` command is for convenience viewing of files only.
