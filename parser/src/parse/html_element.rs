@@ -1,3 +1,5 @@
+//! A dataclass to store parsed Markdown, ready for conversion into a structured JSON format.
+
 #[derive(Debug, PartialEq, serde::Serialize)]
 #[serde(tag = "type")]
 pub enum HTMLElement {

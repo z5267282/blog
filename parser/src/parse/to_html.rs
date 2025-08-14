@@ -145,4 +145,43 @@ mod tests {
             }]
         );
     }
+
+    #[test]
+    fn test_header_and_text() {
+        let text = vec![
+            "# Overview".to_string(),
+            "This blog contains some information.  ".to_string(),
+            "The information will be explained below.  ".to_string(),
+            "".to_string(),
+            "## Details".to_string(),
+            "".to_string(),
+            "There are seven countries in the G7.  ".to_string(),
+            "Japan is a part of the G7.  ".to_string(),
+            "".to_string(),
+        ];
+        let parsed = parse_markdown(&text);
+        let exp = vec![
+            HTMLElement::Header {
+                level: 1,
+                content: "Overview".to_string(),
+            },
+            HTMLElement::Paragraph {
+                lines: vec![
+                    "This blog contains some information.".to_string(),
+                    "The information will be explained below.".to_string(),
+                ],
+            },
+            HTMLElement::Header {
+                level: 2,
+                content: "Details".to_string(),
+            },
+            HTMLElement::Paragraph {
+                lines: vec![
+                    "There are seven countries in the G7.".to_string(),
+                    "Japan is a part of the G7.".to_string(),
+                ],
+            },
+        ];
+        assert_eq!(parsed, exp);
+    }
 }
