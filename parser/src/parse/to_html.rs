@@ -14,6 +14,22 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
     let mut elements: Vec<HTMLElement> = Vec::new();
 
     for line in text {
+        // end the current region
+        if line.is_empty() {
+            match region {
+                Region::NotSet => {}
+                Region::Code(lang, code) => elements.push(HTMLElement::Code {
+                    language: lang,
+                    code,
+                }),
+                Region::OrderedList(list) => elements.push(HTMLElement::OrderedList { list }),
+                Region::UnorderedList(list) => elements.push(HTMLElement::UnorderedList { list }),
+                Region::Paragraph(lines) => elements.push(HTMLElement::Paragraph { lines }),
+            };
+            region = Region::NotSet;
+            continue;
+        }
+
         match region {
             Region::NotSet => {
                 // header
@@ -95,15 +111,9 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                 }
             }
             Region::Paragraph(mut lines) => {
-                // end of paragraph and beginning of a new element
-                if line.is_empty() {
-                    elements.push(HTMLElement::Paragraph { lines });
-                    region = Region::NotSet;
-                } else {
-                    // remove trailing "  " for forced line breaks
-                    lines.push(line.trim().to_string());
-                    region = Region::Paragraph(lines);
-                }
+                // remove trailing "  " for forced line breaks
+                lines.push(line.trim().to_string());
+                region = Region::Paragraph(lines);
             }
         }
     }
