@@ -73,38 +73,36 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                     region = Region::Code(lang, lines);
                 }
             }
-            Region::OrderedList(ref list) => {
+            Region::OrderedList(mut list) => {
                 if line.starts_with(char::is_numeric) {
                     match line.split_once('.') {
                         // list item
                         Some((_, rhs)) => {
-                            let mut updated_list = list.clone();
-                            updated_list.push(rhs.trim_start().to_string());
-                            region = Region::OrderedList(updated_list);
+                            list.push(rhs.trim_start().to_string());
+                            region = Region::OrderedList(list);
                         }
                         // end of list
                         None => {
-                            elements.push(HTMLElement::OrderedList { list: list.clone() });
+                            elements.push(HTMLElement::OrderedList { list });
                             region = Region::NotSet;
                         }
                     }
                 }
                 // assume that there is a blank line to separate the end of the list
                 else {
-                    elements.push(HTMLElement::OrderedList { list: list.clone() });
+                    elements.push(HTMLElement::OrderedList { list });
                     region = Region::NotSet;
                 }
             }
-            Region::UnorderedList(ref list) => {
+            Region::UnorderedList(mut list) => {
                 let no_leading_dash = line.trim_start_matches("- ");
                 // end of list
                 if no_leading_dash.len() == line.len() {
-                    elements.push(HTMLElement::UnorderedList { list: list.clone() });
+                    elements.push(HTMLElement::UnorderedList { list });
                     region = Region::NotSet;
                 } else {
-                    let mut updated_list = list.clone();
-                    updated_list.push(no_leading_dash.to_string());
-                    region = Region::UnorderedList(updated_list);
+                    list.push(no_leading_dash.to_string());
+                    region = Region::UnorderedList(list);
                 }
             }
             Region::Paragraph(mut lines) => {
