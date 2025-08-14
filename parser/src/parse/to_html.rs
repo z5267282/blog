@@ -158,6 +158,7 @@ mod tests {
     fn test_header_and_text() {
         let text = vec![
             "# Overview".to_string(),
+            "".to_string(),
             "This blog contains some information.  ".to_string(),
             "The information will be explained below.  ".to_string(),
             "".to_string(),
