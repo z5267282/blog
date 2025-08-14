@@ -61,17 +61,16 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                     region = Region::Paragraph(vec![line.trim().to_string()])
                 }
             }
-            Region::Code(lang, ref lines) => {
+            Region::Code(lang, mut lines) => {
                 if line.starts_with("```") {
                     elements.push(HTMLElement::Code {
                         language: lang,
-                        code: lines.clone(),
+                        code: lines,
                     });
                     region = Region::NotSet;
                 } else {
-                    let mut updated_lines = lines.clone();
-                    updated_lines.push(line.to_string());
-                    region = Region::Code(lang, updated_lines);
+                    lines.push(line.to_string());
+                    region = Region::Code(lang, lines);
                 }
             }
             Region::OrderedList(ref list) => {
