@@ -44,7 +44,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                 }
                 // paragraph
                 else {
-                    region = Region::Paragraph(vec![line.to_string()])
+                    region = Region::Paragraph(vec![line.trim().to_string()])
                 }
             }
             Region::Code(lang, ref lines) => {
