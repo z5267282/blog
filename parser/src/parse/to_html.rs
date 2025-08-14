@@ -94,16 +94,15 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                     region = Region::UnorderedList(updated_list);
                 }
             }
-            Region::Paragraph(lines) => {
+            Region::Paragraph(mut lines) => {
                 // end of paragraph and beginning of a new element
                 if line.is_empty() {
                     elements.push(HTMLElement::Paragraph { lines });
                     region = Region::NotSet;
                 } else {
-                    let mut updated_lines = lines.clone();
                     // remove trailing "  " for forced line breaks
-                    updated_lines.push(line.trim().to_string());
-                    region = Region::Paragraph(updated_lines);
+                    lines.push(line.trim().to_string());
+                    region = Region::Paragraph(lines);
                 }
             }
         }
