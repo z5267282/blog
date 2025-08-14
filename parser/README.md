@@ -23,6 +23,10 @@ To turn on pretty printing, add this argument.
 cargo run -- --pretty
 ```
 
+# Formatting
+
+It is expected there is a blank line to end a particular markdown feature.
+
 # Supported Markdown Language Features
 
 Not all language features are supported.  

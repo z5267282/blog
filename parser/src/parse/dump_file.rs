@@ -1,3 +1,6 @@
+//! The `dump_blogs` function contains the main code used for the binary crate.  
+//! It will parse the Markdown text for all blogs in `../blog` and create a combined JSON file in `../website/src`.
+
 use log::info;
 use std::fs::{read_dir, read_to_string, File};
 use std::io::Write;

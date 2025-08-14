@@ -2,7 +2,7 @@
 
 Constructors have no return type, so how can you prematurely end one if you need to?
 
-# Error
+# Compiler Error
 
 This error will be shown if you try return something inside a constructor.
 

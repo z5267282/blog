@@ -12,21 +12,22 @@ Theories:
 
 # Hunch
 
-The issue is that folders like
+The issue is that certain folders are getting recorded twice.
 
 ```sh
 /Users/sunny/OneDrive - UNSW/UNSW/Courses/Year 5 - 2023/seng3011
 ```
 
-are getting recorded twice.  
 These are only ever set in `~/.zshrc` so I know it is getting run twice.
 
 # Solution
 
-The following command can remove duplicate items from `$PATH`
+The following command can remove duplicate items from `$PATH`.
 
 ```sh
 typeset -U path
 ```
 
-Link [here](https://tech.serhatteker.com/post/2019-12/remove-duplicates-in-path-zsh/)
+# Sources
+
+1. [techctl](https://tech.serhatteker.com/post/2019-12/remove-duplicates-in-path-zsh/)

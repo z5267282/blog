@@ -1,5 +1,7 @@
-Do you need to wrap variables expanded in subshells with double quotes?  
-No you don't, as soon as you write one `""`, white spaces are preserved in variable expansions.  
+# Overview
+
+There is no need to wrap variables expanded in subshells with double quotes.  
+As soon as you write one `""`, white spaces are preserved in variable expansions.  
 If you did then this should print out `0`:
 
 ```sh
@@ -11,5 +13,3 @@ cd ..
 [ "$(basename $full)" = "$(basename "$full")" ]
 echo $?
 ```
-
-.

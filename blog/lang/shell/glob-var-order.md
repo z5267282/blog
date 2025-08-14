@@ -1,57 +1,30 @@
 # Overview
 
-1. Variable substitution occurs
-2. Then globbing
+In the Shell, variables are substituted and then globbing occurs.  
+This means that any glob characters should appear literally unquoted.
 
-# Proof
+# Example
 
-If there are files
-
-```txt
-a aa b c
-```
-
-then the glob
-
-```sh
-a*
-```
-
-should have the files
+Suppose there are these files.
 
 ```txt
-a aa
+a
+aa
+b
+c
 ```
 
-. If you run
+Then the glob `a*` should have these files.
+
+```txt
+a
+aa
+```
+
+Running `echo a*` will list those files correctly.  
+However, if you put the glob expression in a variable you won't get the same result.
 
 ```sh
-echo a*
-```
-
-you will get the right answer
-
-```
-a aa
-```
-
-. But if you put the glob in a variable it won't work.
-
-# Script
-
-```sh
-touch a aa b c
-echo a*
 l='a*'
 echo $l
 ```
-
-# Double Quotes
-
-Note that if you try
-
-```sh
-echo "$l"
-```
-
-the star will get interpretted literally.
