@@ -8,7 +8,8 @@ enum Region {
     Paragraph(Vec<String>),
 }
 
-/// Return an error with the line number and a diagnostic message if one occurred
+/// Return an error with the line number and a diagnostic message if one occurred.
+/// Parsed paragraph lines have their leading and trailing whitespace stripped.
 pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
     let mut region = Region::NotSet;
     let mut elements: Vec<HTMLElement> = Vec::new();
@@ -17,11 +18,8 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
         // end the current region
         if line.is_empty() {
             match region {
-                Region::NotSet => {}
-                Region::Code(lang, code) => elements.push(HTMLElement::Code {
-                    language: lang,
-                    code,
-                }),
+                // code is special - must get a closing ``` to end it
+                Region::NotSet | Region::Code(..) => continue,
                 Region::OrderedList(list) => elements.push(HTMLElement::OrderedList { list }),
                 Region::UnorderedList(list) => elements.push(HTMLElement::UnorderedList { list }),
                 Region::Paragraph(lines) => elements.push(HTMLElement::Paragraph { lines }),
