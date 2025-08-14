@@ -136,19 +136,20 @@ mod tests {
 
     #[test]
     fn test_code() {
-        let code: Vec<String> = vec!["```py", "print('hello mate')", "print('cya')", "```"]
-            .iter()
-            .map(|s| s.to_string())
-            .collect();
-        let exp_code = vec!["print('hello mate')", "print('cya')"]
-            .iter()
-            .map(|s| s.to_string())
-            .collect();
+        let code = vec![
+            "```py".to_string(),
+            "print('hello mate')".to_string(),
+            "print('cya')".to_string(),
+            "```".to_string(),
+        ];
         assert_eq!(
             parse_markdown(&code),
             vec![HTMLElement::Code {
                 language: "py".to_string(),
-                code: exp_code
+                code: vec![
+                    "print('hello mate')".to_string(),
+                    "print('cya')".to_string()
+                ]
             }]
         );
     }
