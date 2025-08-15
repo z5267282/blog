@@ -13,10 +13,12 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "@vercel/react-router": "^1.2.2",
+    "@vitest/browser": "^3.2.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.11",
-    "vercel": "^44.6.5"
+    "vercel": "^44.6.5",
+    "vitest-browser-react": "^1.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

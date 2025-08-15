@@ -26,6 +26,8 @@ export default function parseOneLine(lineContents) {
     content.push(jsx);
     currSubLine = currSubLine.slice(end);
   }
+  // push on the last piece of text to parse
+  content.push(currSubLine);
 
   return content;
 }
