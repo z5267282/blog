@@ -162,9 +162,12 @@ const parsers = [new link(), new code(), new bold()];
 function removeEscapedMarkdownBackslashes(text) {
   return (
     text
-      // links
+      // link descriptions
       .replaceAll("\\[", "[")
       .replaceAll("\\]", "]")
+      // link url
+      .replaceAll("\\(", "(")
+      .replaceAll("\\)", ")")
       // bold
       .replace("\\*", "*")
       // inline code

@@ -71,7 +71,7 @@ test("parser works with multiple code blocks", async () => {
   expect(text4).toBe(" the end iterator range is not inclusive.");
 });
 
-test("parser removes backslashes for escaped links", () => {
+test("parser removes backslashes for escaped brackets", () => {
   const parsed = parseOneLine(
     "Source \\[1\\] recommends putting `$PATH` setup in `.zshenv`."
   );
@@ -81,6 +81,13 @@ test("parser removes backslashes for escaped links", () => {
   const [text, ..._] = parsed;
 
   expect(text).toBe("Source [1] recommends putting ");
+});
+
+test("parser removes backslashes for escaped parentheses", () => {
+  const parsed = parseOneLine("The prompt \\(PS2\\) will be shown.");
+
+  const [text] = parsed;
+  expect(text).toBe("The prompt (PS2) will be shown.");
 });
 
 test("parser removes backslashes for inline code", () => {
