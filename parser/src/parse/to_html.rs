@@ -217,4 +217,34 @@ mod tests {
         ];
         assert_eq!(parsed, exp);
     }
+
+    #[test]
+    fn test_table_unit() {
+        let table = vec![
+            "| Letter | Description           |".to_string(),
+            "| ------ | --------------------- |".to_string(),
+            "| c      | make new window       |".to_string(),
+            "| &      | kill current window   |".to_string(),
+            "| 1..9   | go to window 1..9     |".to_string(),
+            "| ,      | rename window         |".to_string(),
+            "| p      | go to previous window |".to_string(),
+            "| n      | go to next window     |".to_string(),
+        ];
+        let exp_headers = vec!["Letter".to_string(), "Description".to_string()];
+        let exp_rows = vec![
+            vec!["c".to_string(), "make new window".to_string()],
+            vec!["&".to_string(), "kill current window".to_string()],
+            vec!["1..9".to_string(), "go to window 1..9".to_string()],
+            vec![",".to_string(), "rename window".to_string()],
+            vec!["p".to_string(), "go to previous window".to_string()],
+            vec!["n".to_string(), "go to next window".to_string()],
+        ];
+        assert_eq!(
+            parse_markdown(&table),
+            vec![HTMLElement::Table {
+                headers: exp_headers,
+                rows: exp_rows
+            }]
+        );
+    }
 }
