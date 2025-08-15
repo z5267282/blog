@@ -18,14 +18,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
     for line in text {
         // end the current region
         if line.is_empty() {
-            match region {
-                // special elements code and table have their own syntax for detecting the end of a region
-                Region::NotSet | Region::Code(..) | Region::Table(..) => continue,
-                Region::OrderedList(list) => elements.push(HTMLElement::OrderedList { list }),
-                Region::UnorderedList(list) => elements.push(HTMLElement::UnorderedList { list }),
-                Region::Paragraph(lines) => elements.push(HTMLElement::Paragraph { lines }),
-            };
-            region = Region::NotSet;
+            region = handle_blank_line(line, region, &mut elements);
             continue;
         }
 
@@ -153,6 +146,36 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
     elements
 }
 
+/// Handle a blank line for the current region.
+/// Return what the new region should be set as.
+fn handle_blank_line(line: &String, region: Region, elements: &mut Vec<HTMLElement>) -> Region {
+    match region {
+        Region::NotSet => region,
+        // code should keep blank lines
+        Region::Code(lang, mut code) => {
+            code.push(line.to_string());
+            Region::Code(lang, code)
+        }
+        Region::OrderedList(list) => {
+            elements.push(HTMLElement::OrderedList { list });
+            Region::NotSet
+        }
+        Region::UnorderedList(list) => {
+            elements.push(HTMLElement::UnorderedList { list });
+            Region::NotSet
+        }
+        // table has its own syntax for detecting the end of a region
+        Region::Table(headers, rows, _) => {
+            elements.push(HTMLElement::Table { headers, rows });
+            Region::NotSet
+        }
+        Region::Paragraph(lines) => {
+            elements.push(HTMLElement::Paragraph { lines });
+            Region::NotSet
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::parse::html_element::HTMLElement;
@@ -246,5 +269,82 @@ mod tests {
                 rows: exp_rows
             }]
         );
+    }
+
+    #[test]
+    fn test_header_paragraph_code() {
+        let blog = vec![
+            "# Overview".to_string(),
+            "".to_string(),
+            "The `upper_bound` and `lower_bound` functions give iterators to the first element matching a condition.  ".to_string(),
+            "It is possible to change the behaviour so that the last position is instead returned.".to_string(),
+            "".to_string(),
+            "Use reverse iterators in conjunction with the `greater<N>` comparator to do this.".to_string(),
+            "".to_string(),
+            "```cpp".to_string(),
+            "#include <algorithm>".to_string(),
+            "#include <cassert>".to_string(),
+            "#include <utility>".to_string(),
+            "#include <vector>".to_string(),
+            "".to_string(),
+            "auto main(void) -> int {".to_string(),
+            "    /**".to_string(),
+            "        what is the biggest index from [2, 6) st.".to_string(),
+            "        boxes[i] <= 6".to_string(),
+            "        it is 2, boxes[2] = 5".to_string(),
+            "     */".to_string(),
+            "    auto boxes = std::vector<int>{1 , 3 , 5 , 10, 14, 18};".to_string(),
+            "    //                            0   1   2   3   4   5".to_string(),
+            "    // reverse                 e                      b".to_string(),
+            "    //                         -- ->                  <- ++".to_string(),
+            "    //                            18, 14, 10, 5 , 3 , 1".to_string(),
+            "    //                            0   1   2   3   4   5".to_string(),
+            "    //                                        ^ should be this index".to_string(),
+            "    auto j = std::lower_bound(boxes.rbegin(), boxes.rend() - 1 - 1, 6, std::greater<int>()) - boxes.rbegin();".to_string(),
+            "    assert(j == 3);".to_string(),
+            "}".to_string(),
+            "```".to_string(),
+            "".to_string()
+        ];
+
+        let header = HTMLElement::Header {
+            level: 1,
+            content: "Overview".to_string(),
+        };
+        let para1= HTMLElement::Paragraph { lines: vec![
+            "The `upper_bound` and `lower_bound` functions give iterators to the first element matching a condition.".to_string(),
+            "It is possible to change the behaviour so that the last position is instead returned.".to_string(),
+        ] };
+        let para2 = HTMLElement::Paragraph {
+            lines: vec![
+                "Use reverse iterators in conjunction with the `greater<N>` comparator to do this."
+                    .to_string(),
+            ],
+        };
+        let code = HTMLElement::Code { language: "cpp".to_string(), code: vec![
+            "#include <algorithm>".to_string(),
+            "#include <cassert>".to_string(),
+            "#include <utility>".to_string(),
+            "#include <vector>".to_string(),
+            "".to_string(),
+            "auto main(void) -> int {".to_string(),
+            "    /**".to_string(),
+            "        what is the biggest index from [2, 6) st.".to_string(),
+            "        boxes[i] <= 6".to_string(),
+            "        it is 2, boxes[2] = 5".to_string(),
+            "     */".to_string(),
+            "    auto boxes = std::vector<int>{1 , 3 , 5 , 10, 14, 18};".to_string(),
+            "    //                            0   1   2   3   4   5".to_string(),
+            "    // reverse                 e                      b".to_string(),
+            "    //                         -- ->                  <- ++".to_string(),
+            "    //                            18, 14, 10, 5 , 3 , 1".to_string(),
+            "    //                            0   1   2   3   4   5".to_string(),
+            "    //                                        ^ should be this index".to_string(),
+            "    auto j = std::lower_bound(boxes.rbegin(), boxes.rend() - 1 - 1, 6, std::greater<int>()) - boxes.rbegin();".to_string(),
+            "    assert(j == 3);".to_string(),
+            "}".to_string(),
+        ] };
+
+        assert_eq!(parse_markdown(&blog), vec![header, para1, para2, code]);
     }
 }
