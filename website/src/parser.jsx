@@ -38,8 +38,10 @@ export default function parseOneLine(lineContents) {
  * @returns null - if there was no feature on the line.
  * @returns object with the [start, end) position in the original line of the match and jsx of the parsed element.
  */
-const findLeftMostFeature = (currSubLine) => {
-  const parsedOptions = parsers.map((parser) => parser.tryParse(currSubLine));
+function findLeftMostFeature(currSubLine) {
+  const parsedOptions = listParsers().map((parser) =>
+    parser.tryParse(currSubLine)
+  );
   let earliest = null;
   for (const option of parsedOptions) {
     if (option === null) {
@@ -51,10 +53,12 @@ const findLeftMostFeature = (currSubLine) => {
     }
   }
   return earliest;
-};
+}
 
 /**
  * An abstract class representing a parsing interface for inline items.
+ * These are not styled in PascalCase to differentiate them from React Functional components.
+ * Instead they are styled in snake_case.
  */
 class parser {
   constructor(regex) {
@@ -71,6 +75,14 @@ class parser {
     line; // just to turn off linter yelling
     return null;
   }
+}
+
+/**
+ * Create a list of all supported Parser subclasses as a hoisted function so the classes can be written below.
+ * @returns {parser[]}
+ */
+function listParsers() {
+  return [new link(), new code(), new bold()];
 }
 
 class link extends parser {
@@ -152,8 +164,6 @@ class bold extends parser {
     };
   }
 }
-
-const parsers = [new link(), new code(), new bold()];
 
 /**
  * @param {string} text
