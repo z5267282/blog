@@ -5,6 +5,7 @@ enum Region {
     Code(String, Vec<String>),
     OrderedList(Vec<String>),
     UnorderedList(Vec<String>),
+    Table(Vec<String>, Vec<Vec<String>>, bool),
     Paragraph(Vec<String>),
 }
 
@@ -18,8 +19,8 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
         // end the current region
         if line.is_empty() {
             match region {
-                // code is special - must get a closing ``` to end it
-                Region::NotSet | Region::Code(..) => continue,
+                // special elements code and table have their own syntax for detecting the end of a region
+                Region::NotSet | Region::Code(..) | Region::Table(..) => continue,
                 Region::OrderedList(list) => elements.push(HTMLElement::OrderedList { list }),
                 Region::UnorderedList(list) => elements.push(HTMLElement::UnorderedList { list }),
                 Region::Paragraph(lines) => elements.push(HTMLElement::Paragraph { lines }),
@@ -55,6 +56,16 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                 // unordered list
                 else if line.starts_with("- ") {
                     region = Region::UnorderedList(vec![line.trim_start_matches("- ").to_string()]);
+                }
+                // table
+                else if line.starts_with("|") {
+                    let mut headers = Vec::new();
+
+                    for cell in line.trim_matches('|').split('|') {
+                        headers.push(cell.trim().to_string());
+                    }
+
+                    region = Region::Table(headers, Vec::new(), true);
                 }
                 // paragraph
                 else {
@@ -110,18 +121,34 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                 lines.push(line.trim().to_string());
                 region = Region::Paragraph(lines);
             }
+            Region::Table(headers, mut rows, is_separator) => {
+                if is_separator {
+                    region = Region::Table(headers, rows, false);
+                } else if line.starts_with("|") {
+                    let mut next_row = Vec::new();
+                    for cell in line.trim_matches('|').split('|') {
+                        next_row.push(cell.trim().to_string());
+                    }
+                    rows.push(next_row);
+                    region = Region::Table(headers, rows, false);
+                } else {
+                    elements.push(HTMLElement::Table { headers, rows });
+                    region = Region::NotSet;
+                }
+            }
         }
     }
 
     match region {
+        Region::NotSet => {}
         Region::Code(lang, code) => elements.push(HTMLElement::Code {
             language: lang,
             code,
         }),
         Region::OrderedList(list) => elements.push(HTMLElement::OrderedList { list }),
         Region::UnorderedList(list) => elements.push(HTMLElement::UnorderedList { list }),
+        Region::Table(headers, rows, _) => elements.push(HTMLElement::Table { headers, rows }),
         Region::Paragraph(lines) => elements.push(HTMLElement::Paragraph { lines }),
-        _ => {}
     }
     elements
 }
@@ -189,5 +216,35 @@ mod tests {
             },
         ];
         assert_eq!(parsed, exp);
+    }
+
+    #[test]
+    fn test_table_unit() {
+        let table = vec![
+            "| Letter | Description           |".to_string(),
+            "| ------ | --------------------- |".to_string(),
+            "| c      | make new window       |".to_string(),
+            "| &      | kill current window   |".to_string(),
+            "| 1..9   | go to window 1..9     |".to_string(),
+            "| ,      | rename window         |".to_string(),
+            "| p      | go to previous window |".to_string(),
+            "| n      | go to next window     |".to_string(),
+        ];
+        let exp_headers = vec!["Letter".to_string(), "Description".to_string()];
+        let exp_rows = vec![
+            vec!["c".to_string(), "make new window".to_string()],
+            vec!["&".to_string(), "kill current window".to_string()],
+            vec!["1..9".to_string(), "go to window 1..9".to_string()],
+            vec![",".to_string(), "rename window".to_string()],
+            vec!["p".to_string(), "go to previous window".to_string()],
+            vec!["n".to_string(), "go to next window".to_string()],
+        ];
+        assert_eq!(
+            parse_markdown(&table),
+            vec![HTMLElement::Table {
+                headers: exp_headers,
+                rows: exp_rows
+            }]
+        );
     }
 }

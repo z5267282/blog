@@ -27,7 +27,7 @@ They are more like tabs in a browser.
 | ,      | rename window         |
 | p      | go to previous window |
 | n      | go to next window     |
-| &      | close window          |
+| x      | close window          |
 
 # Pane
 

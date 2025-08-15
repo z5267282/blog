@@ -9,7 +9,7 @@ import HyperLink from "./components/HyperLink";
  * The content should be wrapped in a parent like a <p> or a <div>.
  * The line can contained nested inline elements like links, code and bold text.
  * @param {*} lineContents - string : of the current line.
- * @returns A <p> tag with the line contents
+ * @returns a list of JSX elements where some are strings. This can be directly injected into a parent element eg <p>{parseOneLine(contents)}</p>
  */
 export default function parseOneLine(lineContents) {
   const content = [];
@@ -27,7 +27,7 @@ export default function parseOneLine(lineContents) {
     currSubLine = currSubLine.slice(end);
   }
 
-  return <p>{content}</p>;
+  return content;
 }
 
 /**
