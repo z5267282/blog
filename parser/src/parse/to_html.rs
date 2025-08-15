@@ -347,4 +347,84 @@ mod tests {
 
         assert_eq!(parse_markdown(&blog), vec![header, para1, para2, code]);
     }
+
+    #[test]
+    fn test_integration() {
+        let blog = vec![
+            "# Notes".to_string(),
+            "".to_string(),
+            "1. Enter `tmux` to start".to_string(),
+            "2. Cannot enter `Command + k` to clear screen".to_string(),
+            "3. Any command letter that is a shift-pressed key, must have shift pressed to work".to_string(),
+            "".to_string(),
+            "# Modifier".to_string(),
+            "".to_string(),
+            "Press the modifier key and then a command letter.  ".to_string(),
+            "In Zac's `.tmux.conf` this was `Control + a`.".to_string(),
+            "".to_string(),
+            "- It is apparently the most ergonomic combination.".to_string(),
+            "".to_string(),
+            "By default it is `Control + b`.  ".to_string(),
+            "You have to release the modifier and then press the command letter as per this [guide](https://superuser.com/questions/266725/tmux-ctrlb-not-working).  ".to_string(),
+            "This is a list of [default command letters](https://man.openbsd.org/tmux#DEFAULT_KEY_BINDINGS).".to_string(),
+            "".to_string(),
+            "# Windows".to_string(),
+            "".to_string(),
+            "They are more like tabs in a browser.".to_string(),
+            "".to_string(),
+            "| Letter | Description           |".to_string(),
+            "| ------ | --------------------- |".to_string(),
+            "| c      | make new window       |".to_string(),
+            "| &      | kill current window   |".to_string(),
+            "| 1..9   | go to window 1..9     |".to_string(),
+            "| ,      | rename window         |".to_string(),
+            "| p      | go to previous window |".to_string(),
+            "| n      | go to next window     |".to_string(),
+            "| x      | close window          |".to_string(),
+            "".to_string(),
+            "# Pane".to_string(),
+            "".to_string(),
+            "A window can be split into panes.  ".to_string(),
+            "Panes are closed by `Control + d` or the command letter `x`.  ".to_string(),
+            "Can switch using arrow keys as the command letter or `o`.".to_string(),
+            "".to_string(),
+        ];
+
+        assert_eq!(parse_markdown(&blog), vec![
+            HTMLElement::Header { level: 1, content: "Notes".to_string() },
+            HTMLElement::OrderedList { list: vec![
+                "Enter `tmux` to start".to_string(),
+                "Cannot enter `Command + k` to clear screen".to_string(),
+                "Any command letter that is a shift-pressed key, must have shift pressed to work".to_string(),
+            ] },
+            HTMLElement::Header { level: 1, content: "Modifier".to_string() },
+            HTMLElement::Paragraph { lines: vec![
+                "Press the modifier key and then a command letter.".to_string(),
+                "In Zac's `.tmux.conf` this was `Control + a`.".to_string(),
+            ] },
+            HTMLElement::UnorderedList { list: vec!["It is apparently the most ergonomic combination.".to_string()] },
+            HTMLElement::Paragraph { lines: vec![
+                "By default it is `Control + b`.".to_string(),
+                "You have to release the modifier and then press the command letter as per this [guide](https://superuser.com/questions/266725/tmux-ctrlb-not-working).".to_string(),
+                "This is a list of [default command letters](https://man.openbsd.org/tmux#DEFAULT_KEY_BINDINGS).".to_string(),
+            ] },
+            HTMLElement::Header { level: 1, content: "Windows".to_string() },
+            HTMLElement::Paragraph { lines: vec!["They are more like tabs in a browser.".to_string() ] },
+            HTMLElement::Table { headers: vec!["Letter".to_string(), "Description".to_string()], rows: vec![
+                vec!["c".to_string(), "make new window".to_string()],
+                vec!["&".to_string(), "kill current window".to_string()],
+                vec!["1..9".to_string(), "go to window 1..9".to_string()],
+                vec![",".to_string(), "rename window".to_string()],
+                vec!["p".to_string(), "go to previous window".to_string()],
+                vec!["n".to_string(), "go to next window".to_string()],
+                vec!["x".to_string(), "close window".to_string()],
+            ] },
+            HTMLElement::Header { level: 1, content: "Pane".to_string() },
+            HTMLElement::Paragraph { lines: vec![
+                "A window can be split into panes.".to_string(),
+                "Panes are closed by `Control + d` or the command letter `x`.".to_string(),
+                "Can switch using arrow keys as the command letter or `o`.".to_string(),
+            ] }
+        ]);
+    }
 }
