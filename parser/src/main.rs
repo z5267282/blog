@@ -11,8 +11,10 @@ fn main() -> Result<(), Error> {
     Ok(())
 }
 
+/// Command line arguments for the blog parser.
 #[derive(Parser, Debug)]
 struct Args {
+    /// Whether to pretty-print the JSON output.
     #[arg(short, long, action = ArgAction::SetTrue)]
     pretty: bool,
 }

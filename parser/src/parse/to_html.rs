@@ -1,16 +1,42 @@
+//! This module provides a parser for converting Markdown text into HTML elements.
+
 use crate::parse::html_element::HTMLElement;
 
+/// Represents the current parsing region.
 enum Region {
+    /// Flag indicating that no region is currently being parsed.
     NotSet,
+    /// Represents a code block with an optional language.
     Code(String, Vec<String>),
+    /// Represents an ordered list.
     OrderedList(Vec<String>),
+    /// Represents an unordered list.
     UnorderedList(Vec<String>),
+    /// Represents a HTML table.
     Table(Vec<String>, Vec<Vec<String>>, bool),
+    /// Represents a paragraph block.
     Paragraph(Vec<String>),
 }
 
-/// Return an error with the line number and a diagnostic message if one occurred.
+/// Returns a list of HTML elements parsed from the provided Markdown text.
 /// Parsed paragraph lines have their leading and trailing whitespace stripped.
+///
+/// # Arguments
+/// * `text` - A vector of strings containing Markdown text.
+///
+/// # Examples
+/// ```
+/// use parser::parse::to_html::parse_markdown;
+///
+/// let markdown = vec![
+///     "# Header".to_string(),
+///     "This is a paragraph.".to_string(),
+/// ];
+/// let elements = parse_markdown(&markdown);
+/// assert_eq!(elements.len(), 2);
+/// assert!(matches!(elements[0], HTMLElement::Header { level: 1, content: _ }));
+/// assert!(matches!(elements[1], HTMLElement::Paragraph { lines: _ }));
+/// ```
 pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
     let mut region = Region::NotSet;
     let mut elements: Vec<HTMLElement> = Vec::new();
@@ -153,11 +179,15 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
     elements
 }
 
+/// Unit tests for the Markdown parser.
+/// These tests cover various Markdown elements such as headers, paragraphs, code blocks, lists,
+/// and tables.
 #[cfg(test)]
 mod tests {
     use crate::parse::html_element::HTMLElement;
     use crate::parse::to_html::parse_markdown;
 
+    /// Test for a simple paragraph of the py language.
     #[test]
     fn test_code() {
         let code = vec![
@@ -178,6 +208,7 @@ mod tests {
         );
     }
 
+    /// Test for a simple header and paragraph.
     #[test]
     fn test_header_and_text() {
         let text = vec![
@@ -218,6 +249,7 @@ mod tests {
         assert_eq!(parsed, exp);
     }
 
+    /// Test for a simple table.
     #[test]
     fn test_table_unit() {
         let table = vec![
