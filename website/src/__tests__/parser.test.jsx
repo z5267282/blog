@@ -17,7 +17,9 @@ test("parser works with link in the middle", async () => {
   expect(start).toBe("There is info at ");
   expect(end).toBe(" for some more information");
 
-  const { getByText } = await render(<Hyperlink />);
-  const link = await getByText("this link");
-  await expect(link).toBeInTheDocument();
+  const { getByText } = render(Hyperlink);
+  const link = getByText("this link");
+  await expect.element(link).toBeInTheDocument();
+  await expect.element(link).toHaveAttribute("href", "https://www.google.com");
+  await expect.element(link).toHaveTextContent("this link");
 });

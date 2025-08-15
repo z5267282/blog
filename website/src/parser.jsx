@@ -8,7 +8,7 @@ import HyperLink from "./components/HyperLink";
  * Take in one line and split it up into content strings and jsx as they appear.
  * The content should be wrapped in a parent like a <p> or a <div>.
  * The line can contained nested inline elements like links, code and bold text.
- * @param {*} lineContents - string : of the current line.
+ * @param {string} lineContents : of the current line.
  * @returns a list of JSX elements where some are strings. This can be directly injected into a parent element eg <p>{parseOneLine(contents)}</p>
  */
 export default function parseOneLine(lineContents) {
