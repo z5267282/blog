@@ -70,3 +70,37 @@ test("parser works with multiple code blocks", async () => {
 
   expect(text4).toBe(" the end iterator range is not inclusive.");
 });
+
+test("parser removes backslashes for escaped links", () => {
+  const parsed = parseOneLine(
+    "Source \\[1\\] recommends putting `$PATH` setup in `.zshenv`."
+  );
+  // | text, code, text, code, text with full stop | = 5
+  expect(parsed.length).toBe(5);
+
+  const [text, ..._] = parsed;
+
+  expect(text).toBe("Source [1] recommends putting ");
+});
+
+test("parser removes backslashes for inline code", () => {
+  const parsed = parseOneLine(
+    "the backtic looks like \\` - it's to the left of 1 on the keyboard"
+  );
+
+  const [text] = parsed;
+  expect(text).toBe(
+    "the backtic looks like ` - it's to the left of 1 on the keyboard"
+  );
+});
+
+test("parser removes asterisks for bold text", () => {
+  const parsed = parseOneLine(
+    "the asterisk looks like \\* - press SHIFT + 8 on the keyboard to find it"
+  );
+
+  const [text] = parsed;
+  expect(text).toBe(
+    "the asterisk looks like * - press SHIFT + 8 on the keyboard to find it"
+  );
+});

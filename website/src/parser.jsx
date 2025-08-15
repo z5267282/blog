@@ -22,12 +22,12 @@ export default function parseOneLine(lineContents) {
     }
 
     const { jsx, start, end } = first;
-    content.push(currSubLine.slice(0, start));
+    content.push(removeEscapedMarkdownBackslashes(currSubLine.slice(0, start)));
     content.push(jsx);
     currSubLine = currSubLine.slice(end);
   }
   // push on the last piece of text to parse
-  content.push(currSubLine);
+  content.push(removeEscapedMarkdownBackslashes(currSubLine));
 
   return content;
 }
@@ -154,3 +154,20 @@ class bold extends parser {
 }
 
 const parsers = [new link(), new code(), new bold()];
+
+/**
+ * @param {string} text
+ * @returns {string} with all backslashes for escaped characters removed
+ */
+function removeEscapedMarkdownBackslashes(text) {
+  return (
+    text
+      // links
+      .replaceAll("\\[", "[")
+      .replaceAll("\\]", "]")
+      // bold
+      .replace("\\*", "*")
+      // inline code
+      .replace("\\`", "`")
+  );
+}
