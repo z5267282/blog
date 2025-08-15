@@ -8,7 +8,7 @@ import HyperLink from "./components/HyperLink";
  * Take in one line and split it up into content strings and jsx as they appear.
  * The content should be wrapped in a parent like a <p> or a <div>.
  * The line can contained nested inline elements like links, code and bold text.
- * @param {*} lineContents - string : of the current line.
+ * @param {string} lineContents : of the current line.
  * @returns a list of JSX elements where some are strings. This can be directly injected into a parent element eg <p>{parseOneLine(contents)}</p>
  */
 export default function parseOneLine(lineContents) {
@@ -22,10 +22,12 @@ export default function parseOneLine(lineContents) {
     }
 
     const { jsx, start, end } = first;
-    content.push(currSubLine.slice(0, start));
+    content.push(removeEscapedMarkdownBackslashes(currSubLine.slice(0, start)));
     content.push(jsx);
     currSubLine = currSubLine.slice(end);
   }
+  // push on the last piece of text to parse
+  content.push(removeEscapedMarkdownBackslashes(currSubLine));
 
   return content;
 }
@@ -36,8 +38,10 @@ export default function parseOneLine(lineContents) {
  * @returns null - if there was no feature on the line.
  * @returns object with the [start, end) position in the original line of the match and jsx of the parsed element.
  */
-const findLeftMostFeature = (currSubLine) => {
-  const parsedOptions = parsers.map((parser) => parser.tryParse(currSubLine));
+function findLeftMostFeature(currSubLine) {
+  const parsedOptions = listParsers().map((parser) =>
+    parser.tryParse(currSubLine)
+  );
   let earliest = null;
   for (const option of parsedOptions) {
     if (option === null) {
@@ -49,10 +53,12 @@ const findLeftMostFeature = (currSubLine) => {
     }
   }
   return earliest;
-};
+}
 
 /**
  * An abstract class representing a parsing interface for inline items.
+ * These are not styled in PascalCase to differentiate them from React Functional components.
+ * Instead they are styled in snake_case.
  */
 class parser {
   constructor(regex) {
@@ -69,6 +75,14 @@ class parser {
     line; // just to turn off linter yelling
     return null;
   }
+}
+
+/**
+ * Create a list of all supported Parser subclasses as a hoisted function so the classes can be written below.
+ * @returns {parser[]}
+ */
+function listParsers() {
+  return [new link(), new code(), new bold()];
 }
 
 class link extends parser {
@@ -151,4 +165,22 @@ class bold extends parser {
   }
 }
 
-const parsers = [new link(), new code(), new bold()];
+/**
+ * @param {string} text
+ * @returns {string} with all backslashes for escaped characters removed
+ */
+function removeEscapedMarkdownBackslashes(text) {
+  return (
+    text
+      // link descriptions
+      .replaceAll("\\[", "[")
+      .replaceAll("\\]", "]")
+      // link url
+      .replaceAll("\\(", "(")
+      .replaceAll("\\)", ")")
+      // bold
+      .replace("\\*", "*")
+      // inline code
+      .replace("\\`", "`")
+  );
+}
