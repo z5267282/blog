@@ -1,4 +1,6 @@
-The in-build `Array.sort` method sorts by lexicographic order so:
+# Overview
+
+The build-in `Array.sort` method sorts by lexicographic order, even for numbers.
 
 ```js
 const x = [1, 2, 10, 20];
@@ -9,12 +11,11 @@ assert(x[2] === 2);
 assert(x[3] === 20);
 ```
 
-. A sorting function must be provided
+# Fix
+
+A sorting function must be provided for numbers.
 
 ```js
 const x = [1, 2, 10, 20];
 x.sort((a, b) => a - b);
 ```
-
-.
-

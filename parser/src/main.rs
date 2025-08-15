@@ -6,7 +6,9 @@ use std::io::Error;
 fn main() -> Result<(), Error> {
     let args = Args::parse();
     env_logger::init();
-    dump_blogs(args.pretty)
+    dump_blogs(args.pretty)?;
+    println!("successfully parsed blogs");
+    Ok(())
 }
 
 #[derive(Parser, Debug)]

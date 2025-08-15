@@ -1,5 +1,8 @@
+# Overview
+
 The `upper_bound` and `lower_bound` functions give iterators to the first element matching a condition.  
-It is possible to change the behaviour so that the last position is instead returned.  
+It is possible to change the behaviour so that the last position is instead returned.
+
 Use reverse iterators in conjunction with the `greater<N>` comparator to do this.
 
 ```cpp
@@ -25,4 +28,3 @@ auto main(void) -> int {
     assert(j == 3);
 }
 ```
-

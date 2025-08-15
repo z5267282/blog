@@ -1,3 +1,5 @@
+import HyperLink from "./components/HyperLink";
+
 /**
  * Parse inline code features.
  */
@@ -88,11 +90,7 @@ class link extends parser {
     const url = attempt[2];
 
     return {
-      jsx: (
-        <a className="text-blue-400 underline" href={url} target="_blank">
-          {description}
-        </a>
-      ),
+      jsx: <HyperLink url={url} description={description} />,
       start: attempt.index,
       end: attempt.index + attempt[0].length,
     };

@@ -1,5 +1,8 @@
-Name recent folders with a stack-history rather than using `cd -`.  
-Example:
+# Overview
+
+We can name recent folders with a stack-history rather than using `cd -`.
+
+# Example
 
 ```sh
 $ pushd a
@@ -15,6 +18,7 @@ $ popd
 # now in b
 a
 ```
-.  
-[guide](https://www.youtube.com/watch?v=AVXYq8aL47Q&t=217)
 
+# Sources
+
+1. [Akamai Developer](https://www.youtube.com/watch?v=AVXYq8aL47Q&t=217)

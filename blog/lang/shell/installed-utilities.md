@@ -1,4 +1,6 @@
-These utilities were installed using `brew` on mac.
+# Overview
+
+This is a list of utilities that were installed using `brew` on my Macbook.
 
 | Name  | Description                         |
 | ----- | ----------------------------------- |

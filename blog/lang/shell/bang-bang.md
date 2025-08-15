@@ -1,3 +1,5 @@
+# Overview
+
 `!!` refers to the last run command.
 
 ```sh
@@ -6,5 +8,6 @@ sudo !! # this is the same as
 sudo echo hello
 ```
 
-[guide](https://youtu.be/AVXYq8aL47Q?si=pSpSXghvq-Vq5P7p&t=524)
+# Sources
 
+1. [Akamai Developer](https://youtu.be/AVXYq8aL47Q?si=pSpSXghvq-Vq5P7p&t=524)

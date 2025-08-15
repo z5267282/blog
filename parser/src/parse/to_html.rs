@@ -9,12 +9,26 @@ enum Region {
     Paragraph(Vec<String>),
 }
 
-/// Return an error with the line number and a diagnostic message if one occurred
+/// Return an error with the line number and a diagnostic message if one occurred.
+/// Parsed paragraph lines have their leading and trailing whitespace stripped.
 pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
     let mut region = Region::NotSet;
     let mut elements: Vec<HTMLElement> = Vec::new();
 
     for line in text {
+        // end the current region
+        if line.is_empty() {
+            match region {
+                // special elements code and table have their own syntax for detecting the end of a region
+                Region::NotSet | Region::Code(..) | Region::Table(..) => continue,
+                Region::OrderedList(list) => elements.push(HTMLElement::OrderedList { list }),
+                Region::UnorderedList(list) => elements.push(HTMLElement::UnorderedList { list }),
+                Region::Paragraph(lines) => elements.push(HTMLElement::Paragraph { lines }),
+            };
+            region = Region::NotSet;
+            continue;
+        }
+
         match region {
             Region::NotSet => {
                 // header
@@ -55,20 +69,19 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                 }
                 // paragraph
                 else {
-                    region = Region::Paragraph(vec![line.to_string()])
+                    region = Region::Paragraph(vec![line.trim().to_string()])
                 }
             }
-            Region::Code(lang, ref lines) => {
+            Region::Code(lang, mut lines) => {
                 if line.starts_with("```") {
                     elements.push(HTMLElement::Code {
                         language: lang,
-                        code: lines.clone(),
+                        code: lines,
                     });
                     region = Region::NotSet;
                 } else {
-                    let mut updated_lines = lines.clone();
-                    updated_lines.push(line.to_string());
-                    region = Region::Code(lang, updated_lines);
+                    lines.push(line.to_string());
+                    region = Region::Code(lang, lines);
                 }
             }
             Region::OrderedList(mut list) => {
@@ -88,21 +101,25 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                 }
                 // assume that there is a blank line to separate the end of the list
                 else {
-                    elements.push(HTMLElement::OrderedList { list: list.clone() });
+                    elements.push(HTMLElement::OrderedList { list });
                     region = Region::NotSet;
                 }
             }
-            Region::UnorderedList(ref list) => {
+            Region::UnorderedList(mut list) => {
                 let no_leading_dash = line.trim_start_matches("- ");
                 // end of list
                 if no_leading_dash.len() == line.len() {
-                    elements.push(HTMLElement::UnorderedList { list: list.clone() });
+                    elements.push(HTMLElement::UnorderedList { list });
                     region = Region::NotSet;
                 } else {
-                    let mut updated_list = list.clone();
-                    updated_list.push(no_leading_dash.to_string());
-                    region = Region::UnorderedList(updated_list);
+                    list.push(no_leading_dash.to_string());
+                    region = Region::UnorderedList(list);
                 }
+            }
+            Region::Paragraph(mut lines) => {
+                // remove trailing "  " for forced line breaks
+                lines.push(line.trim().to_string());
+                region = Region::Paragraph(lines);
             }
             Region::Table(headers, mut rows, is_separator) => {
                 if is_separator {
@@ -115,37 +132,23 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
                     rows.push(next_row);
                     region = Region::Table(headers, rows, false);
                 } else {
-                    elements.push(HTMLElement::Table {
-                        headers,
-                        rows,
-                    });
+                    elements.push(HTMLElement::Table { headers, rows });
                     region = Region::NotSet;
-                }
-            }
-            Region::Paragraph(lines) => {
-                // end of paragraph and beginning of a new element
-                if line.is_empty() {
-                    elements.push(HTMLElement::Paragraph { lines });
-                    region = Region::NotSet;
-                } else {
-                    let mut updated_lines = lines.clone();
-                    // remove trailing "  " for forced line breaks
-                    updated_lines.push(line.trim().to_string());
-                    region = Region::Paragraph(updated_lines);
                 }
             }
         }
     }
 
     match region {
+        Region::NotSet => {}
         Region::Code(lang, code) => elements.push(HTMLElement::Code {
             language: lang,
             code,
         }),
         Region::OrderedList(list) => elements.push(HTMLElement::OrderedList { list }),
         Region::UnorderedList(list) => elements.push(HTMLElement::UnorderedList { list }),
+        Region::Table(headers, rows, _) => elements.push(HTMLElement::Table { headers, rows }),
         Region::Paragraph(lines) => elements.push(HTMLElement::Paragraph { lines }),
-        _ => {}
     }
     elements
 }
@@ -157,20 +160,61 @@ mod tests {
 
     #[test]
     fn test_code() {
-        let code: Vec<String> = vec!["```py", "print('hello mate')", "print('cya')", "```"]
-            .iter()
-            .map(|s| s.to_string())
-            .collect();
-        let exp_code = vec!["print('hello mate')", "print('cya')"]
-            .iter()
-            .map(|s| s.to_string())
-            .collect();
+        let code = vec![
+            "```py".to_string(),
+            "print('hello mate')".to_string(),
+            "print('cya')".to_string(),
+            "```".to_string(),
+        ];
         assert_eq!(
             parse_markdown(&code),
             vec![HTMLElement::Code {
                 language: "py".to_string(),
-                code: exp_code
+                code: vec![
+                    "print('hello mate')".to_string(),
+                    "print('cya')".to_string()
+                ]
             }]
         );
+    }
+
+    #[test]
+    fn test_header_and_text() {
+        let text = vec![
+            "# Overview".to_string(),
+            "".to_string(),
+            "This blog contains some information.  ".to_string(),
+            "The information will be explained below.  ".to_string(),
+            "".to_string(),
+            "## Details".to_string(),
+            "".to_string(),
+            "There are seven countries in the G7.  ".to_string(),
+            "Japan is a part of the G7.  ".to_string(),
+            "".to_string(),
+        ];
+        let parsed = parse_markdown(&text);
+        let exp = vec![
+            HTMLElement::Header {
+                level: 1,
+                content: "Overview".to_string(),
+            },
+            HTMLElement::Paragraph {
+                lines: vec![
+                    "This blog contains some information.".to_string(),
+                    "The information will be explained below.".to_string(),
+                ],
+            },
+            HTMLElement::Header {
+                level: 2,
+                content: "Details".to_string(),
+            },
+            HTMLElement::Paragraph {
+                lines: vec![
+                    "There are seven countries in the G7.".to_string(),
+                    "Japan is a part of the G7.".to_string(),
+                ],
+            },
+        ];
+        assert_eq!(parsed, exp);
     }
 }

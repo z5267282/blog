@@ -1,7 +1,8 @@
+# Overview
+
 Putting `:` and one of `ahl` changes the behaviour of a path expansion in `zsh`.
 
 ```sh
-
 [ -d top ] && rm -rf top
 mkdir -p top/next
 seq 3 | xargs -I % touch top/next/%
