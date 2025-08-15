@@ -80,6 +80,27 @@ These must start with `'- '`.
 
 If a language is provided it must be directly after the ` "```" `.
 
+### Tables
+
+Tables must be formatted like so.
+
+```txt
+| header 1 | header 2 ... |
+| -------- | ------------ |
+| content  | goes         |
+| here     | ...          |
+```
+
+The second row must start with a pipe `|`.  
+All content has its leading and trailing whitespace trimmed so the rows above are parsed to the following.
+
+```json
+[
+  ["content", "goes"],
+  ["here", "..."]
+]
+```
+
 ## Frontend Rendered
 
 These are supported if nested inside a paragraph.  
