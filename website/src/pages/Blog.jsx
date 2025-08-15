@@ -9,7 +9,9 @@ export default function Blog() {
 
   return (
     <div className="min-y-screen">
-      <header className="text-[1.5em] flex justify-center items-center h-[calc(1.5em_+20px)] w-full pt-[20px]">{title}</header>
+      <header className="text-[1.5em] flex justify-center items-center h-[calc(1.5em_+20px)] w-full pt-[20px]">
+        {title}
+      </header>
       <div className="w-full h-auto ml-[10vw] mr-[10vw] px-10">
         {getBlog(lang, title).map((html) => genHTML(html))}
       </div>
@@ -65,6 +67,29 @@ const genHTML = (htmlData) => {
             <li>{parseOneLine(li)}</li>
           ))}
         </ul>
+      );
+    }
+    case "Table": {
+      const { _, headers, rows } = htmlData;
+      return (
+        <table>
+          <thead>
+            <tr>
+              {headers.map((header) => (
+                <th scope="col">{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr>
+                {row.map((col) => (
+                  <td>{col}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       );
     }
     case "Paragraph": {
