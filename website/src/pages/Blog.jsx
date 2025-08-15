@@ -72,11 +72,13 @@ const genHTML = (htmlData) => {
     case "Table": {
       const { _, headers, rows } = htmlData;
       return (
-        <table>
+        <table className="border-[2px] border-black">
           <thead>
             <tr>
               {headers.map((header) => (
-                <th scope="col">{header}</th>
+                <th className="bg-[#e2edff] p-1" scope="col">
+                  {header}
+                </th>
               ))}
             </tr>
           </thead>
@@ -84,7 +86,7 @@ const genHTML = (htmlData) => {
             {rows.map((row) => (
               <tr>
                 {row.map((col) => (
-                  <td>{col}</td>
+                  <td className="p-1">{col}</td>
                 ))}
               </tr>
             ))}
