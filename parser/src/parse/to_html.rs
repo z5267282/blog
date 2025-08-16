@@ -26,16 +26,18 @@ enum Region {
 ///
 /// # Examples
 /// ```
-/// use parser::parse::to_html::parse_markdown;
+/// # use parser::parse::to_html::parse_markdown;
+/// # use parser::parse::html_element::HTMLElement;
 ///
 /// let markdown = vec![
 ///     "# Header".to_string(),
+///     "".to_string(),
 ///     "This is a paragraph.".to_string(),
 /// ];
 /// let elements = parse_markdown(&markdown);
 /// assert_eq!(elements.len(), 2);
-/// assert!(matches!(elements[0], HTMLElement::Header { level: 1, content: _ }));
-/// assert!(matches!(elements[1], HTMLElement::Paragraph { lines: _ }));
+/// assert_eq!(elements[0], HTMLElement::Header { level: 1, content: "Header".to_string() });
+/// assert_eq!(elements[1], HTMLElement::Paragraph { lines: vec!["This is a paragraph.".to_string()] });
 /// ```
 pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
     let mut region = Region::NotSet;
@@ -381,7 +383,7 @@ mod tests {
     }
 
     #[test]
-    fn test_integration() {
+    fn test_complex_composition() {
         let blog = vec![
             "# Notes".to_string(),
             "".to_string(),
