@@ -9,7 +9,6 @@ use std::path::PathBuf;
 use serde_json::{to_string, to_string_pretty};
 
 use super::html_element::HTMLElement;
-use super::paths::{JSON, MARKDOWN};
 use super::to_html::parse_markdown;
 
 /// A structured representation of the parsed blogs, grouped by language.
@@ -44,12 +43,19 @@ struct Blog {
 ///
 /// dump_blogs(false).expect("Failed to dump blogs");
 /// ```
-pub fn dump_blogs(pretty: bool) -> Result<(), std::io::Error> {
+pub fn dump_blogs(
+    markdown_blog_folder: &str,
+    json_dump_path: &str,
+    pretty: bool,
+) -> Result<(), std::io::Error> {
     info!("commencing dump of markdown blogs to json");
-    info!("iterating through all languages in {}", MARKDOWN);
+    info!(
+        "iterating through all languages in {}",
+        markdown_blog_folder
+    );
 
     let mut parsed: Vec<LanguageDump> = vec![];
-    for try_lang in read_dir(MARKDOWN)? {
+    for try_lang in read_dir(markdown_blog_folder)? {
         let lang = try_lang?.path();
         if !lang.is_dir() {
             continue;
@@ -70,10 +76,10 @@ pub fn dump_blogs(pretty: bool) -> Result<(), std::io::Error> {
         parsed.push(language);
     }
 
-    let mut file = File::create(JSON)?;
+    let mut file = File::create(json_dump_path)?;
     let dump = dump_to_str(&parsed, pretty)?;
     file.write(dump.as_bytes())?;
-    info!("dumped file {}", JSON);
+    info!("dumped file {}", json_dump_path);
     Ok(())
 }
 
