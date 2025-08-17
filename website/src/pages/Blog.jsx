@@ -12,7 +12,7 @@ export default function Blog() {
       <header className="text-[1.5em] flex justify-center items-center h-[calc(1.5em_+20px)] w-full pt-[20px]">
         {title}
       </header>
-      <div className="w-full h-auto ml-0 mr-0 md:ml-[10vw] md:mr-[10vw] px-10 pb-10">
+      <div className="w-full h-auto ml-0 mr-0 pl-[5%] pr-[5%] md:pl-[10vw] md:pr-[10vw] pb-10 overflow-x-auto">
         {getBlog(lang, title).map((html) => genHTML(html))}
       </div>
     </div>
@@ -42,8 +42,8 @@ const genHTML = (htmlData) => {
     case "Code": {
       const code = htmlData.code;
       return (
-        <pre>
-          <code>{code.join("\n")}</code>
+        <pre className="inline-block border-[2px] my-2 border-black p-2">
+          <code className="min-w-min">{code.join("\n")}</code>
         </pre>
       );
     }
@@ -70,7 +70,7 @@ const genHTML = (htmlData) => {
     case "Table": {
       const { _, headers, rows } = htmlData;
       return (
-        <div className="h-full w-full flex justify-center items-center md:justify-start p-2">
+        <div className="h-full w-full flex justify-center items-center md:justify-start p-2 overflow-x-auto">
           <table className="border-[2px] border-black">
             <thead>
               <tr>

@@ -130,7 +130,7 @@ class code extends parser {
     const contents = attempt[1];
 
     return {
-      jsx: <code>{contents}</code>,
+      jsx: <code className="bg-[#eeeeee] rounded-sm p-1">{contents}</code>,
       start: attempt.index,
       end: attempt.index + attempt[0].length,
     };
