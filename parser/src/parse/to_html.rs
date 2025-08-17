@@ -50,73 +50,18 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
             continue;
         }
 
-        match region {
-            Region::NotSet => region = handle_entering_region(line, &mut elements),
-            Region::Code(lang, mut lines) => {
-                if line.starts_with("```") {
-                    elements.push(HTMLElement::Code {
-                        language: lang,
-                        code: lines,
-                    });
-                    region = Region::NotSet;
-                } else {
-                    lines.push(line.to_string());
-                    region = Region::Code(lang, lines);
-                }
+        region = match region {
+            Region::NotSet => handle_entering_region(line, &mut elements),
+            Region::Code(lang, lines) => handle_in_code_region(line, &mut elements, lang, lines),
+            Region::OrderedList(list) => handle_in_ordered_list_region(line, &mut elements, list),
+            Region::UnorderedList(list) => {
+                handle_in_unordered_list_region(line, &mut elements, list)
             }
-            Region::OrderedList(mut list) => {
-                if line.starts_with(char::is_numeric) {
-                    match line.split_once('.') {
-                        // list item
-                        Some((_, rhs)) => {
-                            list.push(rhs.trim_start().to_string());
-                            region = Region::OrderedList(list);
-                        }
-                        // end of list
-                        None => {
-                            elements.push(HTMLElement::OrderedList { list });
-                            region = Region::NotSet;
-                        }
-                    }
-                }
-                // assume that there is a blank line to separate the end of the list
-                else {
-                    elements.push(HTMLElement::OrderedList { list });
-                    region = Region::NotSet;
-                }
+            Region::Paragraph(lines) => handle_in_paragraph_region(line, lines),
+            Region::Table(headers, rows, is_separator) => {
+                handle_in_table_region(line, &mut elements, headers, rows, is_separator)
             }
-            Region::UnorderedList(mut list) => {
-                let no_leading_dash = line.trim_start_matches("- ");
-                // end of list
-                if no_leading_dash.len() == line.len() {
-                    elements.push(HTMLElement::UnorderedList { list });
-                    region = Region::NotSet;
-                } else {
-                    list.push(no_leading_dash.to_string());
-                    region = Region::UnorderedList(list);
-                }
-            }
-            Region::Paragraph(mut lines) => {
-                // remove trailing "  " for forced line breaks
-                lines.push(line.trim().to_string());
-                region = Region::Paragraph(lines);
-            }
-            Region::Table(headers, mut rows, is_separator) => {
-                if is_separator {
-                    region = Region::Table(headers, rows, false);
-                } else if line.starts_with("|") {
-                    let mut next_row = Vec::new();
-                    for cell in line.trim_matches('|').split('|') {
-                        next_row.push(cell.trim().to_string());
-                    }
-                    rows.push(next_row);
-                    region = Region::Table(headers, rows, false);
-                } else {
-                    elements.push(HTMLElement::Table { headers, rows });
-                    region = Region::NotSet;
-                }
-            }
-        }
+        };
     }
     handle_last_region(region, &mut elements);
     elements
@@ -194,6 +139,94 @@ fn handle_entering_region(line: &String, elements: &mut Vec<HTMLElement>) -> Reg
     else {
         Region::Paragraph(vec![line.trim().to_string()])
     }
+}
+
+fn handle_in_code_region(
+    line: &String,
+    elements: &mut Vec<HTMLElement>,
+    lang: String,
+    mut lines: Vec<String>,
+) -> Region {
+    if line.starts_with("```") {
+        elements.push(HTMLElement::Code {
+            language: lang,
+            code: lines,
+        });
+        Region::NotSet
+    } else {
+        lines.push(line.to_string());
+        Region::Code(lang, lines)
+    }
+}
+
+fn handle_in_ordered_list_region(
+    line: &String,
+    elements: &mut Vec<HTMLElement>,
+    mut list: Vec<String>,
+) -> Region {
+    if line.starts_with(char::is_numeric) {
+        match line.split_once('.') {
+            // list item
+            Some((_, rhs)) => {
+                list.push(rhs.trim_start().to_string());
+                Region::OrderedList(list)
+            }
+            // end of list
+            None => {
+                elements.push(HTMLElement::OrderedList { list });
+                Region::NotSet
+            }
+        }
+    }
+    // assume that there is a blank line to separate the end of the list
+    else {
+        elements.push(HTMLElement::OrderedList { list });
+        Region::NotSet
+    }
+}
+
+fn handle_in_unordered_list_region(
+    line: &String,
+    elements: &mut Vec<HTMLElement>,
+    mut list: Vec<String>,
+) -> Region {
+    let no_leading_dash = line.trim_start_matches("- ");
+    // end of list
+    if no_leading_dash.len() == line.len() {
+        elements.push(HTMLElement::UnorderedList { list });
+        Region::NotSet
+    } else {
+        list.push(no_leading_dash.to_string());
+        Region::UnorderedList(list)
+    }
+}
+
+fn handle_in_table_region(
+    line: &String,
+    elements: &mut Vec<HTMLElement>,
+    headers: Vec<String>,
+    mut rows: Vec<Vec<String>>,
+    is_separator: bool,
+) -> Region {
+    if is_separator {
+        Region::Table(headers, rows, false)
+    } else if line.starts_with("|") {
+        let mut next_row = Vec::new();
+        for cell in line.trim_matches('|').split('|') {
+            next_row.push(cell.trim().to_string());
+        }
+        rows.push(next_row);
+        Region::Table(headers, rows, false)
+    } else {
+        elements.push(HTMLElement::Table { headers, rows });
+        Region::NotSet
+    }
+}
+
+fn handle_in_paragraph_region(line: &String, mut lines: Vec<String>) -> Region {
+    // remove trailing "  " for forced line breaks
+    lines.push(line.trim().to_string());
+    Region::Paragraph(lines)
 }
 
 fn handle_last_region(region: Region, elements: &mut Vec<HTMLElement>) -> () {
