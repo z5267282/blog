@@ -10,7 +10,7 @@ export default function Blog() {
   return (
     <div className="min-y-screen">
       <header className="text-[1.5em] flex justify-center items-center h-[calc(1.5em_+20px)] w-full pt-[20px]">
-        {displayTitle}
+        {capitalise(displayTitle)}
       </header>
       <div className="w-full h-auto ml-0 mr-0 pl-[5%] pr-[5%] md:pl-[10vw] md:pr-[10vw] pb-10 overflow-x-auto">
         {getBlog(lang, displayTitle).map((html, index) =>
@@ -20,6 +20,32 @@ export default function Blog() {
     </div>
   );
 }
+
+/**
+ * Convert the first letter of each word spliy by whitespace to uppercase.
+ * @param {String} text
+ * @returns A copy of the original string with each word capitalised.
+ */
+const capitalise = (text) => {
+  let inWord = false;
+  const result = Array.from(text.split("")).map((c) => {
+    // non-letter
+    if (/\s/.test(c)) {
+      inWord = false;
+      return c;
+    }
+    // letter in middle of word
+    else if (inWord) {
+      return c;
+    }
+    // start of word
+    else {
+      inWord = true;
+      return c.toUpperCase();
+    }
+  });
+  return result.join("");
+};
 
 /**
  * Generate the base part of an element's key for React-rendering management.
@@ -83,12 +109,13 @@ const genHTML = (htmlData, elementKey) => {
     case "Code": {
       const { code } = htmlData;
       return (
-        <pre
-          className="inline-block border-[2px] my-2 border-black p-2 overflow-x-auto"
-          key={`${elementKey}-code_block`}
-        >
-          <code className="w-max">{code.join("\n")}</code>
-        </pre>
+        // this div is needed to ensure code blocks appear on their own lines even if there is room for both to appear on the same one
+        <div key={`${elementKey}-code_block`}>
+          {/* inline-block allows the <pre> to grow as big as the <code> */}
+          <pre className="inline-block border-[2px] my-2 border-black p-2 overflow-x-auto">
+            <code className="w-max">{code.join("\n")}</code>
+          </pre>
+        </div>
       );
     }
     case "OrderedList": {
