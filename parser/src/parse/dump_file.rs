@@ -119,13 +119,6 @@ pub fn dump_blogs(
 /// If there was an error reading the file from path.
 ///
 /// # Examples
-/// ```
-/// use std::path::PathBuf;
-/// use parser::parse::dump_file::parse_blog;
-///
-/// let path = PathBuf::from("my-blog-post.md");
-/// let html_elements = parse_blog(&path).expect("Failed to parse blog");
-/// ```
 fn parse_blog(path: &PathBuf) -> Result<Vec<HTMLElement>, std::io::Error> {
     info!("loading markdown from {}", path.display());
     let markdown = read_to_string(path)?
@@ -147,16 +140,6 @@ fn parse_blog(path: &PathBuf) -> Result<Vec<HTMLElement>, std::io::Error> {
 ///
 /// # Errors
 /// If the basename could not be extracted from the path.
-///
-/// # Examples
-/// ```
-/// use std::path::PathBuf;
-/// use parser::parse::dump_file::basename;
-///
-/// let path = PathBuf::from("my-blog-post.md");
-/// let base = basename(&path).expect("Failed to extract basename");
-/// assert_eq!(base, "file.md");
-/// ```
 fn basename(path: &PathBuf) -> Result<String, std::io::Error> {
     info!("trying to extract basename for {}", path.display());
     let basename = path
@@ -176,16 +159,6 @@ fn basename(path: &PathBuf) -> Result<String, std::io::Error> {
 ///
 /// # Errors
 /// If the basename could not be extracted from the path.
-///
-/// # Examples
-/// ```
-/// use std::path::PathBuf;
-/// use parser::parse::dump_file::get_lang_name;
-///
-/// let lang = PathBuf::from("/path/to/lang");
-/// let name = get_lang_name(&lang).expect("Failed to get language name");
-/// assert_eq!(name, "lang");
-/// ```
 fn get_lang_name(lang: &PathBuf) -> Result<String, std::io::Error> {
     basename(&lang)
 }
@@ -196,14 +169,6 @@ fn get_lang_name(lang: &PathBuf) -> Result<String, std::io::Error> {
 /// * `path` - The path from which the basename could not be extracted.
 ///
 /// # Examples
-/// ```
-/// use std::path::PathBuf;
-/// use parser::parse::dump_file::gen_cannot_extract_basename;
-///
-/// let path = PathBuf::from("my-blog-post.md");
-/// let error = gen_cannot_extract_basename(&path);
-/// assert!(error.to_string().contains("basename could not be extracted from absolute path /path/to/file.md"));
-/// ```
 fn gen_cannot_extract_basename(path: &PathBuf) -> std::io::Error {
     std::io::Error::new(
         std::io::ErrorKind::Other,
@@ -222,20 +187,6 @@ fn gen_cannot_extract_basename(path: &PathBuf) -> std::io::Error {
 ///
 /// # Errors
 /// If there was an error serializing the parsed data to a JSON string.
-///
-/// # Examples
-/// ```
-/// use parser::parse::dump_file::{dump_to_str, LanguageDump};
-/// use serde_json::to_string_pretty;
-///
-/// let parsed = vec![LanguageDump {
-///     title: "My Blog Post".into(),
-///     content: "This is the content of my blog post.".into(),
-/// }];
-/// let json = dump_to_str(&parsed, true).expect("Failed to dump to JSON");
-/// assert!(json.contains("My Blog Post"));
-/// assert!(json.contains("This is the content of my blog post."));
-/// ```
 fn dump_to_str(parsed: &Vec<LanguageDump>, pretty: bool) -> Result<String, std::io::Error> {
     info!("preparing to parse markdown");
     let dumper = if pretty {
@@ -264,20 +215,72 @@ fn dump_to_str(parsed: &Vec<LanguageDump>, pretty: bool) -> Result<String, std::
 ///
 /// # Errors
 /// If there was an error extracting the basename or formatting the title.
-///
-/// # Examples
-/// ```
-/// use std::path::PathBuf;
-/// use parser::parse::dump_file::prepare_title;
-///
-/// let blog = PathBuf::from("my-blog-post.md");
-/// let title = prepare_title(&blog).expect("Failed to prepare title");
-/// assert_eq!(title, "my blog post");
-/// ```
 fn prepare_title(blog: &PathBuf) -> Result<String, std::io::Error> {
     info!("preparing blog title for {}", blog.display());
     let base = basename(blog)?;
     let title = base.replace('-', " ").trim_end_matches(".md").to_string();
     info!("prepared title {}", title.as_str());
     Ok(title)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::PathBuf;
+
+    use super::*;
+
+    #[test]
+    fn test_basename_good() {
+        let mut path = PathBuf::new();
+        path.push("root");
+        path.push("parent");
+        path.push("child.md");
+        match basename(&path) {
+            Err(_) => assert!(false),
+            Ok(base) => assert_eq!(base, "child.md"),
+        };
+    }
+
+    #[test]
+    fn test_lang_name_good() {
+        let mut path = PathBuf::new();
+        path.push("root");
+        path.push("parent");
+        match get_lang_name(&path) {
+            Err(_) => assert!(false),
+            Ok(lang) => assert_eq!(lang, "parent"),
+        };
+    }
+
+    #[test]
+    fn test_dump_to_str_not_pretty() {
+        let parsed = vec![LanguageDump {
+            language: "cpp".to_string(),
+            blogs: vec![Blog {
+                title: "My Blog Post".to_string(),
+                html: vec![HTMLElement::Paragraph {
+                    lines: vec!["This is the content of my blog post.".to_string()],
+                }],
+            }],
+        }];
+        let json = dump_to_str(&parsed, false).expect("Failed to dump to JSON");
+        assert!(json.contains("My Blog Post"));
+        assert!(json.contains("This is the content of my blog post."));
+    }
+
+    #[test]
+    fn test_cannot_extract_basename() {
+        let path = PathBuf::from("my-blog-post.md");
+        let error = gen_cannot_extract_basename(&path);
+        assert!(error
+            .to_string()
+            .contains("basename could not be extracted from absolute path my-blog-post.md"));
+    }
+
+    #[test]
+    fn test_prepare_title() {
+        let blog = PathBuf::from("my-blog-post.md");
+        let title = prepare_title(&blog).expect("Failed to prepare title");
+        assert_eq!(title, "my blog post");
+    }
 }
