@@ -70,7 +70,7 @@ const genHTML = (htmlData) => {
     case "Table": {
       const { _, headers, rows } = htmlData;
       return (
-        <div className="h-full w-full flex justify-center items-center p-2">
+        <div className="h-full w-full flex justify-center items-center md:justify-start p-2">
           <table className="border-[2px] border-black">
             <thead>
               <tr>
