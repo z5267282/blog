@@ -51,48 +51,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
         }
 
         match region {
-            Region::NotSet => {
-                // header
-                if line.starts_with('#') {
-                    let content = line.trim_start_matches('#').trim_start().to_string();
-                    let level = line.find(|c| c != '#').unwrap_or(0);
-                    elements.push(HTMLElement::Header { level, content });
-                }
-                // code
-                else if line.starts_with("```") {
-                    let lang = line.trim_start_matches("```").trim().to_string();
-                    region = Region::Code(lang, Vec::new());
-                }
-                // ordered list
-                else if line.starts_with(char::is_numeric) {
-                    match line.split_once('.') {
-                        // list item
-                        Some((_, rhs)) => {
-                            region = Region::OrderedList(vec![rhs.trim_start().to_string()])
-                        }
-                        // normal text
-                        None => region = Region::Paragraph(vec![line.to_string()]),
-                    }
-                }
-                // unordered list
-                else if line.starts_with("- ") {
-                    region = Region::UnorderedList(vec![line.trim_start_matches("- ").to_string()]);
-                }
-                // table
-                else if line.starts_with("|") {
-                    let mut headers = Vec::new();
-
-                    for cell in line.trim_matches('|').split('|') {
-                        headers.push(cell.trim().to_string());
-                    }
-
-                    region = Region::Table(headers, Vec::new(), true);
-                }
-                // paragraph
-                else {
-                    region = Region::Paragraph(vec![line.trim().to_string()])
-                }
-            }
+            Region::NotSet => region = handle_entering_region(line, &mut elements),
             Region::Code(lang, mut lines) => {
                 if line.starts_with("```") {
                     elements.push(HTMLElement::Code {
@@ -159,18 +118,7 @@ pub fn parse_markdown(text: &Vec<String>) -> Vec<HTMLElement> {
             }
         }
     }
-
-    match region {
-        Region::NotSet => {}
-        Region::Code(lang, code) => elements.push(HTMLElement::Code {
-            language: lang,
-            code,
-        }),
-        Region::OrderedList(list) => elements.push(HTMLElement::OrderedList { list }),
-        Region::UnorderedList(list) => elements.push(HTMLElement::UnorderedList { list }),
-        Region::Table(headers, rows, _) => elements.push(HTMLElement::Table { headers, rows }),
-        Region::Paragraph(lines) => elements.push(HTMLElement::Paragraph { lines }),
-    }
+    handle_last_region(region, &mut elements);
     elements
 }
 
@@ -201,6 +149,64 @@ fn handle_blank_line(line: &String, region: Region, elements: &mut Vec<HTMLEleme
             elements.push(HTMLElement::Paragraph { lines });
             Region::NotSet
         }
+    }
+}
+
+/// Handle the entering of a new region.
+/// Return what the new region should be.
+fn handle_entering_region(line: &String, elements: &mut Vec<HTMLElement>) -> Region {
+    // header
+    if line.starts_with('#') {
+        let content = line.trim_start_matches('#').trim_start().to_string();
+        let level = line.find(|c| c != '#').unwrap_or(0);
+        elements.push(HTMLElement::Header { level, content });
+        Region::NotSet
+    }
+    // code
+    else if line.starts_with("```") {
+        let lang = line.trim_start_matches("```").trim().to_string();
+        Region::Code(lang, Vec::new())
+    }
+    // ordered list
+    else if line.starts_with(char::is_numeric) {
+        match line.split_once('.') {
+            // list item
+            Some((_, rhs)) => Region::OrderedList(vec![rhs.trim_start().to_string()]),
+            // normal text
+            None => Region::Paragraph(vec![line.to_string()]),
+        }
+    }
+    // unordered list
+    else if line.starts_with("- ") {
+        Region::UnorderedList(vec![line.trim_start_matches("- ").to_string()])
+    }
+    // table
+    else if line.starts_with("|") {
+        let mut headers = Vec::new();
+
+        for cell in line.trim_matches('|').split('|') {
+            headers.push(cell.trim().to_string());
+        }
+
+        Region::Table(headers, Vec::new(), true)
+    }
+    // paragraph
+    else {
+        Region::Paragraph(vec![line.trim().to_string()])
+    }
+}
+
+fn handle_last_region(region: Region, elements: &mut Vec<HTMLElement>) -> () {
+    match region {
+        Region::NotSet => {}
+        Region::Code(lang, code) => elements.push(HTMLElement::Code {
+            language: lang,
+            code,
+        }),
+        Region::OrderedList(list) => elements.push(HTMLElement::OrderedList { list }),
+        Region::UnorderedList(list) => elements.push(HTMLElement::UnorderedList { list }),
+        Region::Table(headers, rows, _) => elements.push(HTMLElement::Table { headers, rows }),
+        Region::Paragraph(lines) => elements.push(HTMLElement::Paragraph { lines }),
     }
 }
 
