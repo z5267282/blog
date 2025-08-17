@@ -123,7 +123,7 @@ pub fn dump_blogs(
 
     let mut file = File::create(json_dump_path)?;
     let dump = dump_to_str(&parsed, pretty)?;
-    file.write(dump.as_bytes())?;
+    file.write_all(dump.as_bytes())?;
     info!("dumped file {}", json_dump_path.display());
     Ok(())
 }
@@ -141,7 +141,6 @@ fn parse_blog(path: &PathBuf) -> Result<Vec<HTMLElement>, std::io::Error> {
     info!("loading markdown from {}", path.display());
     let markdown = read_to_string(path)?
         .lines()
-        .into_iter()
         .map(|s| s.to_string())
         .collect::<Vec<String>>();
 
@@ -158,7 +157,7 @@ fn parse_blog(path: &PathBuf) -> Result<Vec<HTMLElement>, std::io::Error> {
 ///
 /// # Errors
 /// If the basename could not be extracted from the path.
-fn basename(path: &PathBuf) -> Result<String, std::io::Error> {
+fn basename(path: &Path) -> Result<String, std::io::Error> {
     info!("trying to extract basename for {}", path.display());
     let basename = path
         .file_name()
@@ -167,7 +166,7 @@ fn basename(path: &PathBuf) -> Result<String, std::io::Error> {
         .ok_or(gen_cannot_extract_basename(path))?
         .to_string();
     info!("extracted basename {}", basename.as_str());
-    Ok(String::from(basename))
+    Ok(basename)
 }
 
 /// Gets the language name from the path by extracting the basename.
@@ -177,8 +176,8 @@ fn basename(path: &PathBuf) -> Result<String, std::io::Error> {
 ///
 /// # Errors
 /// If the basename could not be extracted from the path.
-fn get_lang_name(lang: &PathBuf) -> Result<String, std::io::Error> {
-    basename(&lang)
+fn get_lang_name(lang: &Path) -> Result<String, std::io::Error> {
+    basename(lang)
 }
 
 /// Helper function to generate an error when the basename cannot be extracted.
@@ -187,14 +186,11 @@ fn get_lang_name(lang: &PathBuf) -> Result<String, std::io::Error> {
 /// * `path` - The path from which the basename could not be extracted.
 ///
 /// # Examples
-fn gen_cannot_extract_basename(path: &PathBuf) -> std::io::Error {
-    std::io::Error::new(
-        std::io::ErrorKind::Other,
-        format!(
-            "basename could not be extracted from absolute path {}",
-            path.display()
-        ),
-    )
+fn gen_cannot_extract_basename(path: &Path) -> std::io::Error {
+    std::io::Error::other(format!(
+        "basename could not be extracted from absolute path {}",
+        path.display()
+    ))
 }
 
 /// Dumps a list of parsed blogs into a JSON string.
@@ -213,14 +209,11 @@ fn dump_to_str(parsed: &Vec<LanguageDump>, pretty: bool) -> Result<String, std::
         to_string
     };
 
-    let dumped = dumper(&parsed).map_err(|e| {
-        std::io::Error::new(
-            std::io::ErrorKind::Other,
-            format!(
-                "Serde error occurred when serialising parsed data: {}",
-                e.to_string()
-            ),
-        )
+    let dumped = dumper(parsed).map_err(|e| {
+        std::io::Error::other(format!(
+            "Serde error occurred when serialising parsed data: {}",
+            e
+        ))
     })?;
     info!("markdown parsed");
     Ok(dumped)
@@ -233,7 +226,7 @@ fn dump_to_str(parsed: &Vec<LanguageDump>, pretty: bool) -> Result<String, std::
 ///
 /// # Errors
 /// If there was an error extracting the basename or formatting the title.
-fn prepare_title(blog: &PathBuf) -> Result<String, std::io::Error> {
+fn prepare_title(blog: &Path) -> Result<String, std::io::Error> {
     info!("preparing blog title for {}", blog.display());
     let base = basename(blog)?;
     let title = base.replace('-', " ").trim_end_matches(".md").to_string();

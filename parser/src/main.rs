@@ -11,7 +11,7 @@ fn main() -> Result<(), Error> {
     env_logger::init();
     let markdown = Path::new(MARKDOWN);
     let json = Path::new(JSON);
-    dump_blogs(&markdown, &json, args.pretty)?;
+    dump_blogs(markdown, json, args.pretty)?;
     println!("successfully parsed blogs");
     Ok(())
 }
