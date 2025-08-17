@@ -5,14 +5,15 @@ import parseOneLine from "../parser";
 
 export default function Blog() {
   const { lang, title } = useParams();
+  const displayTitle = URLtoBlog(title);
 
   return (
     <div className="min-y-screen">
       <header className="text-[1.5em] flex justify-center items-center h-[calc(1.5em_+20px)] w-full pt-[20px]">
-        {URLtoBlog(title)}
+        {displayTitle}
       </header>
       <div className="w-full h-auto ml-0 mr-0 pl-[5%] pr-[5%] md:pl-[10vw] md:pr-[10vw] pb-10 overflow-x-auto">
-        {getBlog(lang, title).map((html, index) =>
+        {getBlog(lang, displayTitle).map((html, index) =>
           genHTML(html, genElementKey(title, index))
         )}
       </div>
