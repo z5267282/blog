@@ -76,7 +76,7 @@ const genHTML = (htmlData) => {
               <tr>
                 {headers.map((header) => (
                   <th className="bg-[#e2edff] p-1" scope="col">
-                    {header}
+                    {parseOneLine(header)}
                   </th>
                 ))}
               </tr>
@@ -85,7 +85,7 @@ const genHTML = (htmlData) => {
               {rows.map((row) => (
                 <tr>
                   {row.map((col) => (
-                    <td className="p-1">{col}</td>
+                    <td className="p-1">{parseOneLine(col)}</td>
                   ))}
                 </tr>
               ))}
