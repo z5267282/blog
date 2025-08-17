@@ -84,7 +84,7 @@ const genHTML = (htmlData, elementKey) => {
       return (
         <pre
           className="inline-block border-[2px] my-2 border-black p-2"
-          key={`${elementKey}-inline_code`}
+          key={`${elementKey}-code_block`}
         >
           <code className="min-w-min">{code.join("\n")}</code>
         </pre>
@@ -100,7 +100,7 @@ const genHTML = (htmlData, elementKey) => {
               className="list-inside list-decimal"
               key={`${subKey}-item-${index}`}
             >
-              {parseOneLine(li)}
+              {parseOneLine(li, subKey)}
             </li>
           ))}
         </ol>
@@ -116,7 +116,7 @@ const genHTML = (htmlData, elementKey) => {
               className="list-inside list-disc"
               key={`${subKey}-item-${index}`}
             >
-              {parseOneLine(li)}
+              {parseOneLine(li, subKey)}
             </li>
           ))}
         </ul>
@@ -141,7 +141,7 @@ const genHTML = (htmlData, elementKey) => {
                       scope="col"
                       key={headerKey}
                     >
-                      {parseOneLine(header)}
+                      {parseOneLine(header, subKey)}
                     </th>
                   );
                 })}
@@ -156,7 +156,7 @@ const genHTML = (htmlData, elementKey) => {
                       const colKey = `${rowKey}-col-${c}`;
                       return (
                         <td className="p-1" key={colKey}>
-                          {parseOneLine(col)}
+                          {parseOneLine(col, colKey)}
                         </td>
                       );
                     })}
@@ -175,7 +175,7 @@ const genHTML = (htmlData, elementKey) => {
         <div key={subKey}>
           {lines.map((line, index) => (
             <p className="wrap-break-word" key={`${subKey}-line-${index}`}>
-              {parseOneLine(line)}
+              {parseOneLine(line, subKey)}
             </p>
           ))}
         </div>
