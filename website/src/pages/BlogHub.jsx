@@ -15,7 +15,7 @@ export default function BlogHub() {
       </div>
       <ul className="mt-10 w-full h-auto flex flex-col items-center gap-y-[20px]">
         {languages.map((language) => (
-          <LanguageLinkCard language={language} />
+          <LanguageLinkCard language={language} key={`hub-${language}`} />
         ))}
       </ul>
     </div>

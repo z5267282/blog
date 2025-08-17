@@ -29,7 +29,7 @@ export default function LanguageHub() {
         {titles.map((title, i) => (
           <li
             className={`${mobileCell} ${tabletCell} ${desktopCell} ${alignDesktopViewPortCell(i)}`}
-            key={`${lang} - ${title}`}
+            key={`${lang}-${title}`}
           >
             <Link
               className="flex justify-center items-center h-full w-full text-[1.em] bg-[#fff4e2] rounded-lg p-5 hover:bg-[#FFE1AF]"
