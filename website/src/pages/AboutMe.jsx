@@ -5,7 +5,7 @@ import LogoButton from "../components/LogoButton";
 
 export default function AboutMe() {
   return (
-    <div className="pt-10 px-10 mx-[10%]">
+    <div className="pt-10 pb-10 px-10 mx-0 md:mx-[10%]">
       <title>sunny | home</title>
       <div className="w-full h-full flex justify-center items-center">
         <img
@@ -23,9 +23,9 @@ export default function AboutMe() {
         <Header1 content="About Me" />
         <p>
           Hi, I'm Sunny. I graduated from Software Engineering at UNSW in
-          December of 2024. I'm currently a course developer and tutor for
-          the Advanced C++ Programming Course. This website showcases some
-          of my coding projects and blogs. Enjoy!
+          December of 2024. I'm currently a course developer and tutor for the
+          Advanced C++ Programming Course. This website showcases some of my
+          coding projects and blogs. Enjoy!
         </p>
       </div>
       <div className="mt-5">

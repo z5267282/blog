@@ -14,13 +14,15 @@ export default function BlogHub() {
         <Header1 content="Language-Semantic Blogs" />
       </div>
       <ul className="mt-10 w-full h-auto flex flex-col items-center gap-y-[20px]">
-        {languages.map((language) => (<LanguageLinkCard language={language} />))}
+        {languages.map((language) => (
+          <LanguageLinkCard language={language} />
+        ))}
       </ul>
     </div>
   );
 }
 
-function LanguageLinkCard({language}) {
+function LanguageLinkCard({ language }) {
   return (
     <li className="bg-green-50 h-[2.5em] w-1/4" key={`lang-${language}`}>
       <Link

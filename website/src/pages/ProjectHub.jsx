@@ -4,7 +4,7 @@ import ProjectPreviewCard from "../cards/ProjectPreviewCard";
 
 export default function ProjectHub() {
   return (
-    <div className="pb-[15px]">
+    <div className="pb-10">
       <title>sunny | projects</title>
       <div className="flex justify-center items-center h-[calc(1.5em_+20px)] pt-[20px]">
         <Header1 content="My Projects" />
@@ -51,5 +51,5 @@ function BlogMarkdownParserPreview() {
       description="An open-source parser that takes in Markdown text and structures in into a fixed-JSON format. The blogs for this website were parsed from markdown using this parser."
       technologies="Written entirely in Rust."
     />
-  )
+  );
 }
