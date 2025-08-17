@@ -19,13 +19,18 @@ export default function LanguageHub() {
   const desktopCell = "lg:ml-0 lg:h-[2em] lg:w-3/4";
 
   return (
-    <div className="pb-[15px] md:pb-0 lg:pb-0">
+    <div className="pb-10 md:pb-0 lg:pb-0">
       <div className="flex justify-center items-center h-[calc(1.5em_+20px)] pt-[20px]">
         <Header1 content={`Language-Semantics for ${lang}`} />
       </div>
-      <ul className={`mt-10 w-full h-auto pg-5 ${mobileGrid} ${tabletGrid} ${desktopGrid}`}>
+      <ul
+        className={`mt-10 w-full h-auto pg-5 ${mobileGrid} ${tabletGrid} ${desktopGrid}`}
+      >
         {titles.map((title, i) => (
-          <li className={`${mobileCell} ${tabletCell} ${desktopCell} ${alignDesktopViewPortCell(i)}`} key={`${lang} - ${title}`}>
+          <li
+            className={`${mobileCell} ${tabletCell} ${desktopCell} ${alignDesktopViewPortCell(i)}`}
+            key={`${lang}-${title}`}
+          >
             <Link
               className="flex justify-center items-center h-full w-full text-[1.em] bg-[#fff4e2] rounded-lg p-5 hover:bg-[#FFE1AF]"
               to={`/blogs/${lang}/${blogToURL(title)}`}
@@ -51,9 +56,12 @@ export default function LanguageHub() {
 function alignDesktopViewPortCell(index) {
   // it had to be justify-self center since justify-items didn't work
   switch (index % 3) {
-    case 0: return "lg:justify-self-end";
-    case 1: return "lg:justify-self-center";
+    case 0:
+      return "lg:justify-self-end";
+    case 1:
+      return "lg:justify-self-center";
     // 2
-    default: return "lg:justify-self-start";
+    default:
+      return "lg:justify-self-start";
   }
 }

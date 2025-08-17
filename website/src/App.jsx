@@ -17,7 +17,7 @@ export default function App() {
     <div className="w-screen min-h-screen bg-[#fff4e2] overflow-auto">
       <BrowserRouter>
         <NavBar />
-        <div className="bg-white ml-[10vw] mr-[10vw] min-h-[calc(100vh-35px)]">
+        <div className="bg-white ml-0 mr-0 mt-[35px] md:ml-[10vw] md:mr-[10vw] min-h-[calc(100vh-35px)]">
           <Routes>
             <Route path="/">
               <Route index element={<AboutMe />} />

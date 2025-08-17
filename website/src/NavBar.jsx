@@ -2,7 +2,7 @@ import { Link, useMatch } from "react-router-dom";
 
 export default function NavBar() {
   return (
-    <nav className="bg-[#e2edff] w-screen h-[35px] flex justify-center align-center">
+    <nav className="bg-[#e2edff] w-screen h-[35px] flex justify-center align-center top-[0] fixed">
       <ol className="w-1/2 flex flex-row justify-center align-center">
         <Tab path="/" contents="home" />
         <Tab path="/projects" contents="projects" />
@@ -19,9 +19,10 @@ export default function NavBar() {
  * @prop rightBorder: bool - whether to set the right border or not.
  */
 function Tab({ path, contents, rightBorder = false }) {
-  let classes = "list-none w-full h-full flex justify-center items-center border-l-[5px] border-white"
+  let classes =
+    "list-none w-full h-full flex justify-center items-center border-l-[5px] border-white";
   if (rightBorder) {
-    classes += " border-r-[5px]"
+    classes += " border-r-[5px]";
   }
   if (useMatch(`${path}/*`)) {
     classes += " bg-[#AFCDFF]";
