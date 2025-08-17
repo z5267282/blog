@@ -4,7 +4,7 @@
 use log::info;
 use std::fs::{read_dir, read_to_string, File};
 use std::io::Write;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde_json::{to_string, to_string_pretty};
 
@@ -39,19 +39,56 @@ struct Blog {
 ///
 /// # Examples
 /// ```
+/// use std::fs::File;
+/// use std::io::Write;
+/// use tempfile::{tempdir, NamedTempFile};
+///
 /// use parser::parse::dump_file::dump_blogs;
 ///
-/// dump_blogs(false).expect("Failed to dump blogs");
+/// let contents = "# Overview\
+/// \
+/// This is a sample blog.  \
+/// No further content.\
+/// \
+/// ";
+///
+/// match tempdir() {
+///     Err(_) => assert!(false),
+///     Ok(dir) => {
+///         dbg!(dir.path().display());
+///         let blog_path = dir.path().join("example-blog.md");
+///         match File::create(blog_path) {
+///             Err(_) => assert!(false),
+///             Ok(mut blog) => {
+///                 match blog.write_all(contents.as_bytes()) {
+///                     Err(_) => assert!(false),
+///                     Ok(_) => {
+///                         let dump_path = dir.path().join("parsed");
+///                         match dump_blogs(&dir.path(), &dump_path, true) {
+///                             Err(_) => assert!(false),
+///                             Ok(_) => {
+///                                 match File::open(dump_path) {
+///                                     Err(_) => assert!(false),
+///                                     Ok(dumped) => assert!(true),
+///                                 }
+///                             }
+///                         };
+///                     },
+///                 }
+///             }
+///         }
+///     }
+/// };
 /// ```
 pub fn dump_blogs(
-    markdown_blog_folder: &str,
-    json_dump_path: &str,
+    markdown_blog_folder: &Path,
+    json_dump_path: &Path,
     pretty: bool,
 ) -> Result<(), std::io::Error> {
     info!("commencing dump of markdown blogs to json");
     info!(
         "iterating through all languages in {}",
-        markdown_blog_folder
+        markdown_blog_folder.display()
     );
 
     let mut parsed: Vec<LanguageDump> = vec![];
@@ -79,7 +116,7 @@ pub fn dump_blogs(
     let mut file = File::create(json_dump_path)?;
     let dump = dump_to_str(&parsed, pretty)?;
     file.write(dump.as_bytes())?;
-    info!("dumped file {}", json_dump_path);
+    info!("dumped file {}", json_dump_path.display());
     Ok(())
 }
 

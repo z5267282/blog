@@ -4,11 +4,14 @@ use parser::parse::paths::{JSON, MARKDOWN};
 
 use clap::{ArgAction, Parser};
 use std::io::Error;
+use std::path::Path;
 
 fn main() -> Result<(), Error> {
     let args = Args::parse();
     env_logger::init();
-    dump_blogs(MARKDOWN, JSON, args.pretty)?;
+    let markdown = Path::new(MARKDOWN);
+    let json = Path::new(JSON);
+    dump_blogs(&markdown, &json, args.pretty)?;
     println!("successfully parsed blogs");
     Ok(())
 }
