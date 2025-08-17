@@ -39,46 +39,36 @@ struct Blog {
 ///
 /// # Examples
 /// ```
-/// use std::fs::File;
-/// use std::io::Write;
+/// use std::fs::{File, create_dir};
+/// use std::io::{Read, Write};
 /// use tempfile::{tempdir, NamedTempFile};
 ///
 /// use parser::parse::dump_file::dump_blogs;
 ///
-/// let contents = "# Overview\
-/// \
-/// This is a sample blog.  \
-/// No further content.\
-/// \
-/// ";
+/// let dir = tempdir().expect("could not create temporary directory");
+/// let blog_folder = dir.path().join("blogs");
+/// let lang = create_dir(&blog_folder).expect("could not create blogs subfolder");
+/// let blog_path = &blog_folder.join("example-blog.md");
+/// let mut blog = File::create(blog_path).expect("could not create temporary blog file");
+/// let contents = r#"# Overview
 ///
-/// match tempdir() {
-///     Err(_) => assert!(false),
-///     Ok(dir) => {
-///         dbg!(dir.path().display());
-///         let blog_path = dir.path().join("example-blog.md");
-///         match File::create(blog_path) {
-///             Err(_) => assert!(false),
-///             Ok(mut blog) => {
-///                 match blog.write_all(contents.as_bytes()) {
-///                     Err(_) => assert!(false),
-///                     Ok(_) => {
-///                         let dump_path = dir.path().join("parsed");
-///                         match dump_blogs(&dir.path(), &dump_path, true) {
-///                             Err(_) => assert!(false),
-///                             Ok(_) => {
-///                                 match File::open(dump_path) {
-///                                     Err(_) => assert!(false),
-///                                     Ok(dumped) => assert!(true),
-///                                 }
-///                             }
-///                         };
-///                     },
-///                 }
-///             }
-///         }
-///     }
-/// };
+/// This is a sample blog.  
+/// No further content.
+///
+/// "#;
+/// blog.write(contents.as_bytes()).expect("could not write blog contents");
+/// let mut dump_file = NamedTempFile::with_suffix(".json").expect("could not create temporary blog file");
+/// let dump_path = dump_file.path();
+/// dump_blogs(&dir.path(), &dump_path, false).expect("failed to dump blogs");
+/// let mut dump_file = File::open(dump_path).expect("could not open dumped file");
+/// let mut dump_contents = String::new();
+/// dump_file.read_to_string(&mut dump_contents).expect("could not read dumped file");
+///
+/// dbg!(&dump_contents);
+///
+/// assert!(&dump_contents.contains("Overview"));
+/// assert!(&dump_contents.contains("This is a sample blog."));
+/// assert!(&dump_contents.contains("No further content."));
 /// ```
 pub fn dump_blogs(
     markdown_blog_folder: &Path,
