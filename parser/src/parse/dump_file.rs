@@ -39,32 +39,50 @@ struct Blog {
 ///
 /// # Examples
 /// ```
-/// use std::fs::{File, create_dir};
+/// use std::fs::{create_dir, File};
 /// use std::io::{Read, Write};
-/// use tempfile::{tempdir, NamedTempFile};
+/// use tempfile::{tempdir, NamedTempFile, TempDir};
 ///
 /// use parser::parse::dump_file::dump_blogs;
 ///
-/// let dir = tempdir().expect("could not create temporary directory");
-/// let blog_folder = dir.path().join("blogs");
-/// let lang = create_dir(&blog_folder).expect("could not create blogs subfolder");
-/// let blog_path = &blog_folder.join("example-blog.md");
-/// let mut blog = File::create(blog_path).expect("could not create temporary blog file");
+/// /// Create a temporary folder as the root of blogs for testing.
+/// /// The structure will be
+/// /// ```txt
+/// /// root/
+/// ///     blogs/
+/// ///         + example-blog.md
+/// /// ```
+/// fn setup_testing_blogs(contents: &str) -> TempDir {
+///     let root = tempdir().expect("could not create temporary directory");
+///     let blogs_path = root.path().join("blogs");
+///     create_dir(&blogs_path).expect("could not create blogs subfolder");
+///
+///     let blog_path = blogs_path.join("example-blog.md");
+///     let mut blog = File::create(blog_path).expect("could not create temporary blog file");
+///
+///     blog.write(contents.as_bytes()).expect("could not write blog contents");
+///     root
+/// }
+///
+/// fn create_json_dump_file() -> NamedTempFile {
+///     NamedTempFile::with_suffix(".json").expect("could not create temporary blog file")
+/// }
+///
 /// let contents = r#"# Overview
 ///
 /// This is a sample blog.  
 /// No further content.
 ///
 /// "#;
-/// blog.write(contents.as_bytes()).expect("could not write blog contents");
-/// let mut dump_file = NamedTempFile::with_suffix(".json").expect("could not create temporary blog file");
-/// let dump_path = dump_file.path();
-/// dump_blogs(&dir.path(), &dump_path, false).expect("failed to dump blogs");
-/// let mut dump_file = File::open(dump_path).expect("could not open dumped file");
-/// let mut dump_contents = String::new();
-/// dump_file.read_to_string(&mut dump_contents).expect("could not read dumped file");
 ///
-/// dbg!(&dump_contents);
+/// let blogs = setup_testing_blogs(contents);
+/// let mut dump_file = create_json_dump_file();
+///
+/// dump_blogs(&blogs.path(), &dump_file.path(), false).expect("failed to dump blogs");
+/// let mut dump_contents = String::new();
+/// &mut dump_file
+///     .read_to_string(&mut dump_contents)
+///     .expect("could not read dumped file");
 ///
 /// assert!(&dump_contents.contains("Overview"));
 /// assert!(&dump_contents.contains("This is a sample blog."));
@@ -228,6 +246,9 @@ mod tests {
     use std::path::PathBuf;
 
     use super::*;
+
+    #[test]
+    fn test_doctest() {}
 
     #[test]
     fn test_basename_good() {
