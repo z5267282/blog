@@ -12,7 +12,7 @@ export default function Blog() {
       <header className="text-[1.5em] flex justify-center items-center h-[calc(1.5em_+20px)] w-full pt-[20px]">
         {title}
       </header>
-      <div className="w-full h-auto ml-[10vw] mr-[10vw] px-10">
+      <div className="w-full h-auto ml-0 mr-0 md:ml-[10vw] md:mr-[10vw] px-10 pb-10">
         {getBlog(lang, title).map((html) => genHTML(html))}
       </div>
     </div>
@@ -52,9 +52,7 @@ const genHTML = (htmlData) => {
       return (
         <ol>
           {list.map((li) => (
-            <li className="inline list-decimal list-inside">
-              {parseOneLine(li)}
-            </li>
+            <li className="list-inside list-decimal">{parseOneLine(li)}</li>
           ))}
         </ol>
       );
@@ -64,7 +62,7 @@ const genHTML = (htmlData) => {
       return (
         <ul>
           {list.map((li) => (
-            <li>{parseOneLine(li)}</li>
+            <li className="list-inside list-disc">{parseOneLine(li)}</li>
           ))}
         </ul>
       );
@@ -72,26 +70,28 @@ const genHTML = (htmlData) => {
     case "Table": {
       const { _, headers, rows } = htmlData;
       return (
-        <table className="border-[2px] border-black">
-          <thead>
-            <tr>
-              {headers.map((header) => (
-                <th className="bg-[#e2edff] p-1" scope="col">
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
+        <div className="h-full w-full flex justify-center items-center p-2">
+          <table className="border-[2px] border-black">
+            <thead>
               <tr>
-                {row.map((col) => (
-                  <td className="p-1">{col}</td>
+                {headers.map((header) => (
+                  <th className="bg-[#e2edff] p-1" scope="col">
+                    {header}
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr>
+                  {row.map((col) => (
+                    <td className="p-1">{col}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       );
     }
     case "Paragraph": {
