@@ -84,10 +84,10 @@ const genHTML = (htmlData, elementKey) => {
       const { code } = htmlData;
       return (
         <pre
-          className="block border-[2px] my-2 border-black p-2 overflow-x-auto"
+          className="inline-block border-[2px] my-2 border-black p-2 overflow-x-auto"
           key={`${elementKey}-code_block`}
         >
-          <code className="min-w-min">{code.join("\n")}</code>
+          <code className="w-max">{code.join("\n")}</code>
         </pre>
       );
     }
