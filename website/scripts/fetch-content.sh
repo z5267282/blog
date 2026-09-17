@@ -3,4 +3,4 @@
 # run in root-level of frontend folder
 # go back to root-level of website
 cd ..
-git --depth 1 clone https://github.com/z5267282/content.git
+git clone --depth 1 https://github.com/z5267282/content.git
