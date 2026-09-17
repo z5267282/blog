@@ -6,7 +6,10 @@ import LogoButton from "../components/LogoButton";
 function ListItemSubsectionLink({ to, linkText, desc }) {
   return (
     <li>
-      <Link className="inline text-blue-400 underline" to={to}>
+      <Link
+        className="inline text-blue-500 underline hover:text-blue-700"
+        to={to}
+      >
         {linkText}
       </Link>
       <span>: {desc}</span>
