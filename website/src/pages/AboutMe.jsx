@@ -1,75 +1,53 @@
+import { Link } from "react-router-dom";
 import Header1 from "../components/Header1";
-import HyperLink from "../components/HyperLink";
-import ListItemWithBoldPrefix from "../components/ListItemWithBoldPrefix";
+import Header2 from "../components/Header2";
 import LogoButton from "../components/LogoButton";
+
+function ListItemSubsectionLink({ to, linkText, desc }) {
+  return (
+    <li>
+      <Link className="inline text-blue-400 underline" to={to}>
+        {linkText}
+      </Link>
+      <span>: {desc}</span>
+    </li>
+  );
+}
 
 export default function AboutMe() {
   return (
     <div className="pt-10 pb-10 px-10 mx-0 md:mx-[10%]">
       <title>sunny | home</title>
-      <div className="w-full h-full flex justify-center items-center">
-        <img
-          // format from here: https://stackoverflow.com/questions/10311092/displaying-files-e-g-images-stored-in-google-drive-on-a-website
-          src="https://lh3.googleusercontent.com/d/1pO_ty9Cs7ZkRTOOrmRTa_lzkxgPWrVfU"
-          // this is needed otherwise we get a 429 status code: https://stackoverflow.com/questions/79052869/google-drive-returns-429-when-using-saved-photo-as-src-for-img-tag
-          referrerPolicy="no-referrer"
-          alt="display picture"
-          width="200"
-          height="200"
-          className="inline"
-        />
-      </div>
       <div className="mt-5 h-auto w-auto">
         <Header1 content="About Me" />
-        <p>
-          Hi, I'm Sunny. I graduated from Software Engineering at UNSW in
-          December of 2024. I'm currently a course developer and tutor for the
-          Advanced C++ Programming Course. This website showcases some of my
-          coding projects and blogs. Enjoy!
-        </p>
+        {/* prettier-ignore */}
+        <div className="whitespace-pre-line">
+{`Hi I'm Sunny.
+I am a developer and university course tutor at UNSW.
+I've taught some interesting things like Front-End, C++, Rust, Shell Scripting and Security.
+I enjoy scripting and especially the joy of spending 3 hours to automate a task which could have been done manually in 5 minutes.
+Enjoy scrolling through!`}
+        </div>
+        <ul>
+          <ListItemSubsectionLink
+            to="/projects"
+            linkText="Projects"
+            desc="some cool things I've built, mostly in education and scripting"
+          />
+          <ListItemSubsectionLink
+            to="/blog"
+            linkText="Blogs"
+            desc="thoughtful prose going through an idea, opinion or review"
+          />
+          <ListItemSubsectionLink
+            to="/lore"
+            linkText="Lore"
+            desc="cool language-specific nuances or details I've run into"
+          />
+        </ul>
       </div>
       <div className="mt-5">
-        <Header1 content="What I've Worked On" />
-        <p>
-          I've done fullstack development for early stage SAS startups. This
-          involved creating cloud services to automate manual tasks like data
-          entry. In my spare time I also create automation scripts to help
-          improve coding efficiency.
-        </p>
-      </div>
-      <div className="mt-5">
-        <Header1 content="Technical Expertise" />
-        <p>
-          I love learning new languages and technologies. Here is a
-          comprehensive list of the ones I've learnt over my programming
-          journey.&nbsp;
-          <HyperLink
-            description="This website"
-            url="https://github.com/z5267282/blog/tree/main/website"
-          />
-          &nbsp;was written in Tailwind and React JS.
-        </p>
-        <ol className="mt-2.5">
-          <ListItemWithBoldPrefix
-            bold="General-Purpose Languages"
-            normal="C, Java, C++, Python, Rust"
-          />
-          <ListItemWithBoldPrefix
-            bold="Scripting"
-            normal="Bash, Powershell, Perl"
-          />
-          <ListItemWithBoldPrefix
-            bold="Front-End Development"
-            normal="HTML, CSS, Vanilla JS, Typescript, React JS, Tailwind CSS"
-          />
-          <ListItemWithBoldPrefix
-            bold="Cloud"
-            normal="AWS Suite: Lambda, S3, EC2"
-          />
-        </ol>
-      </div>
-      <div className="mt-5">
-        <Header1 content="Links" />
+        <Header2 content="Links" />
         <ol className="grid w-[calc(48px*3_+_80px)] grid-cols-3">
           <li>
             <LogoButton
