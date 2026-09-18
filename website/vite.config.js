@@ -5,6 +5,9 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  ssgOptions: {
+    dirStyle: "nested"
+  },
   test: {
     browser: {
       provider: "playwright",
